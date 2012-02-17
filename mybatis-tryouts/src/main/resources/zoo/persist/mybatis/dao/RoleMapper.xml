@@ -47,7 +47,7 @@
 		FROM roles
 	</select>
 
-	<insert id="insertRole" parameterType="Role">
+	<insert id="insertRole" parameterType="Role" useGeneratedKeys="true" keyProperty="id" keyColumn="rol_id" >
 		INSERT INTO roles
 		(
 		<include refid="roleColumnsRaw" />

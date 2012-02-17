@@ -32,11 +32,7 @@ public class SimpleKbigHsqlTestCase {
 	
 	@Test
 	public void insertRole() throws Exception {
-		//TODO: how to get new role ID back?
-		
 		final Role r = new Role();
-		final Integer id = 1000;
-		r.setId(id);
 		r.setActive(true);
 		final Date now = new Date();
 		r.setDateInserted(now);
@@ -45,10 +41,11 @@ public class SimpleKbigHsqlTestCase {
 		r.setName("test role");
 		
 		managementService.insertRole(r);
+		//id got updated
 		
 		final List<Role> roles = managementService.getRoleList();
 		for(Role rol : roles) {
-			if(rol.getId().equals(id))
+			if(rol.getId().equals(r.getId()))
 				return;
 		}
 		
