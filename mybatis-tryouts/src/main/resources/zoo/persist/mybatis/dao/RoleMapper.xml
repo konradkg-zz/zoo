@@ -8,26 +8,39 @@
 
 	<select id="getRole" parameterType="int" resultType="Role">
 		SELECT
-		rol_id, rol_name, rol_description, rol_is_active, rol_date_inserted,
-		rol_date_modified
+		rol_id AS id,
+		rol_name AS name,
+		rol_description AS description,
+		rol_is_active AS active,
+		rol_date_inserted AS dateInserted,
+		rol_date_modified AS dateModified
 		FROM roles
-		WHERE rol_id = #{id}
+		WHERE
+		rol_id = #{id}
 	</select>
 
 	<select id="getRoleList" resultType="Role">
 		SELECT
-		rol_id, rol_name,
-		rol_description, rol_is_active, rol_date_inserted,
-		rol_date_modified
+		rol_id AS id,
+		rol_name
+		AS name,
+		rol_description AS description,
+		rol_is_active AS active,
+		rol_date_inserted AS dateInserted,
+		rol_date_modified AS dateModified
 		FROM roles
 	</select>
 
 	<insert id="insertRole" parameterType="Role">
 		INSERT INTO roles
 		(rol_id,
-		rol_name, rol_description, rol_is_active, rol_date_inserted,
+		rol_name,
+		rol_description,
+		rol_is_active,
+		rol_date_inserted,
 		rol_date_modified)
-		VALUES (#{id}, #{name}, #{description}, #{active},
+		VALUES (#{id},
+		#{name}, #{description}, #{active},
 		#{dateInserted}, #{dateModified})
 	</insert>
 
