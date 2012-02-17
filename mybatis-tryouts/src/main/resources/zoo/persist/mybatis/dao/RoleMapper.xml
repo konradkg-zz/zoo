@@ -8,11 +8,7 @@
 
 	<select id="getRole" parameterType="int" resultType="Role">
 		SELECT
-		rol_id,
-		rol_name,
-		rol_description,
-		rol_is_active,
-		rol_date_inserted,
+		rol_id, rol_name, rol_description, rol_is_active, rol_date_inserted,
 		rol_date_modified
 		FROM roles
 		WHERE rol_id = #{id}
@@ -20,13 +16,19 @@
 
 	<select id="getRoleList" resultType="Role">
 		SELECT
-		rol_id,
-		rol_name,
-		rol_description,
-		rol_is_active,
-		rol_date_inserted,
+		rol_id, rol_name,
+		rol_description, rol_is_active, rol_date_inserted,
 		rol_date_modified
 		FROM roles
 	</select>
+
+	<insert id="insertRole" parameterType="Role">
+		INSERT INTO roles
+		(rol_id,
+		rol_name, rol_description, rol_is_active, rol_date_inserted,
+		rol_date_modified)
+		VALUES (#{id}, #{name}, #{description}, #{active},
+		#{dateInserted}, #{dateModified})
+	</insert>
 
 </mapper>

@@ -1,5 +1,6 @@
 package zoo.persist.mybatis;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
@@ -21,11 +22,26 @@ public class SimpleKbigHsqlTestCase {
 	private KbigDataManagementService managementService;
 
 	@Test
-	public void simpleTest() throws Exception {
+	public void listRoles() throws Exception {
 		final List<Role> roles = managementService.getRoleList();
 		Assert.assertNotNull(roles);
 		Assert.assertTrue(roles.size() > 0);
+	}
+	
+	@Test
+	public void insertRole() throws Exception {
+		//TODO: how to get new role ID back?
 		
+		final Role r = new Role();
+		r.setId(1000);
+		r.setActive(true);
+		final Date now = new Date();
+		r.setDateInserted(now);
+		r.setDateModified(now);
+		r.setDescription("test role description");
+		r.setName("test role");
+		
+		managementService.insertRole(r);
 	}
 
 }

@@ -9,5 +9,7 @@ public interface RoleMapper {
 	  List<Role> getRoleList();
 
 	  Role getRole(int roleId);
+	  
+	  void insertRole(Role role);
 	
 }
