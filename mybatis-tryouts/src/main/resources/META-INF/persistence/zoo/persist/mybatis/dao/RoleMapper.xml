@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="zoo.persist.mybatis.dao.RoleMapper">
+
+	<cache />
+
+	<select id="getRole" parameterType="int" resultType="Role">
+		SELECT
+		rol_id,
+		rol_name,
+		rol_description,
+		rol_is_active,
+		rol_date_inserted,
+		rol_date_modified
+		FROM roles
+		WHERE rol_id = #{id}
+	</select>
+
+	<select id="getRoleList" resultType="Role">
+		SELECT
+		rol_id,
+		rol_name,
+		rol_description,
+		rol_is_active,
+		rol_date_inserted,
+		rol_date_modified
+		FROM roles
+	</select>
+
+</mapper>
