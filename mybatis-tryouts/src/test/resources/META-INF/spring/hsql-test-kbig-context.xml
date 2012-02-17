@@ -14,9 +14,7 @@
    <!-- in-memory database and a datasource -->
     <jdbc:embedded-database id="dataSource">
         <jdbc:script location="classpath:META-INF/database/kbig-hsqldb-schema.sql"/>
-        <!-- 
-        <jdbc:script location="classpath:META-INF/database/jpetstore-hsqldb-dataload.sql"/>
-         -->
+        <jdbc:script location="classpath:META-INF/database/kbig-hsqldb-dataload.sql"/>
     </jdbc:embedded-database>
 
     <!-- transaction manager, use JtaTransactionManager for global tx -->
