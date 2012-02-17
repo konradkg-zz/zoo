@@ -26,6 +26,8 @@ public class SimpleKbigHsqlTestCase {
 		final List<Role> roles = managementService.getRoleList();
 		Assert.assertNotNull(roles);
 		Assert.assertTrue(roles.size() > 0);
+		Assert.assertNotNull(roles.get(0));
+		
 	}
 	
 	@Test
@@ -33,7 +35,8 @@ public class SimpleKbigHsqlTestCase {
 		//TODO: how to get new role ID back?
 		
 		final Role r = new Role();
-		r.setId(1000);
+		final Integer id = 1000;
+		r.setId(id);
 		r.setActive(true);
 		final Date now = new Date();
 		r.setDateInserted(now);
@@ -42,6 +45,14 @@ public class SimpleKbigHsqlTestCase {
 		r.setName("test role");
 		
 		managementService.insertRole(r);
+		
+		final List<Role> roles = managementService.getRoleList();
+		for(Role rol : roles) {
+			if(rol.getId().equals(id))
+				return;
+		}
+		
+		Assert.fail();
 	}
 
 }
