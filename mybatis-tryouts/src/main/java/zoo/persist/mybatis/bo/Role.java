@@ -3,6 +3,7 @@ package zoo.persist.mybatis.bo;
 import java.io.Serializable;
 import java.util.Date;
 
+//must be serializable if <Cache/> is enabled
 public class Role implements Serializable {
 
 	private static final long serialVersionUID = -6356548714238138772L;
