@@ -20,7 +20,7 @@ public class KbigDataManagementService {
 	  }
 	  
 	  //TODO: this shoudn't be here - just example
-	  @Transactional
+	  @Transactional("kbigDataManagementServiceTransactionManager")
 	  public void insertRole(Role role) {
 		  roleMapper.insertRole(role);
 	  }
