@@ -39,6 +39,7 @@ public class ValidatorTestCase {
 		Assert.assertFalse(Validator.isValidPesel("00000000000"));
 	}
 	
+	//http://wipos.p.lodz.pl/zylla/ut/pesel.html
 	@Test
 	public void pesel5() {
 		Assert.assertFalse(Validator.isValidPesel("10000000009"));
