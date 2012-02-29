@@ -35,6 +35,21 @@ public class ValidatorTestCase {
 	}
 	
 	@Test
+	public void pesel4() {
+		Assert.assertFalse(Validator.isValidPesel("00000000000"));
+	}
+	
+	@Test
+	public void pesel5() {
+		Assert.assertFalse(Validator.isValidPesel("10000000009"));
+	}
+	
+	@Test
+	public void pesel6() {
+		Assert.assertFalse(Validator.isValidPesel("11000000006"));
+	}
+	
+	@Test
 	public void regon1() {
 		Assert.assertTrue(Validator.isValidRegon("121330459"));
 	}
