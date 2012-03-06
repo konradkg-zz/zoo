@@ -13,21 +13,10 @@ public class StructureCompletnesVisitor implements FinancialObligationElementsVi
 
 	@Override
 	public void visit(Creditor creditor) {
-		if (creditor != null) {
-			log("Creditor OK.");
-		} else {
-			log("Creditor missing.");
-		}
-
 	}
 
 	@Override
 	public void visit(Debtor debtor) {
-		if (debtor != null) {
-			log("Debtor OK.");
-		} else {
-			log("Debtor missing.");
-		}
 
 	}
 
@@ -36,16 +25,16 @@ public class StructureCompletnesVisitor implements FinancialObligationElementsVi
 	}
 
 	@Override
-	public void visit(FinancialObligation financialObligation) {
+	public void visit(FinancialObligation fo) {
+		String debtor = "debtor=" + ((fo.debtor != null) ? "OK" : "missing");
+		String creditor = "; creditor=" + ((fo.creditor != null) ? "OK" : "missing");
+		String pex = "; pex=" + ((fo.pex != null) ? "OK" : "missing");
+		
+		log(debtor + creditor + pex);
 	}
 
 	@Override
 	public void visit(Pex pex) {
-		if (pex != null) {
-			log("Pex OK.");
-		} else {
-			log("Pex missing.");
-		}
 	}
 
 	@Override

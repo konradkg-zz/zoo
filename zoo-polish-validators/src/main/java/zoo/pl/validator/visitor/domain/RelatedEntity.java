@@ -8,7 +8,8 @@ public class RelatedEntity implements FinancialObligationElement{
 	
 	@Override
 	public void accept(FinancialObligationElementsVisitor visitor) {
-		visitor.visit(entity);
+		entity.accept(visitor);
+		
 		visitor.visit(this);
 	}
 }

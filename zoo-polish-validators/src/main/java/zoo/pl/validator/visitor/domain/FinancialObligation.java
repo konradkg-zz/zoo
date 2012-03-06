@@ -12,10 +12,12 @@ public class FinancialObligation implements FinancialObligationElement{
 	
 	@Override
 	public void accept(FinancialObligationElementsVisitor visitor) {
-		visitor.visit(reference);
-		visitor.visit(debtor);
-		visitor.visit(creditor);
-		visitor.visit(pex);
+		reference.accept(visitor);
+		if(debtor != null) {
+			debtor.accept(visitor);
+		}
+		creditor.accept(visitor);
+		pex.accept(visitor);
 		
 		visitor.visit(this);
 	}

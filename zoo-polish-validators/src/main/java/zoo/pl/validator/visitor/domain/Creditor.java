@@ -20,9 +20,9 @@ public class Creditor implements FinancialObligationElement {
 
 	@Override
 	public void accept(FinancialObligationElementsVisitor visitor) {
-		visitor.visit(entity);
+		entity.accept(visitor);
 		for(RelatedEntity r : entities) {
-			visitor.visit(r);
+			r.accept(visitor);
 		}
 		
 		visitor.visit(this);
