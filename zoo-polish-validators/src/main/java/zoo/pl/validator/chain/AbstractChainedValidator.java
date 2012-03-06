@@ -108,7 +108,7 @@ public abstract class AbstractChainedValidator implements ChainedValidator {
 
 	public void validate(FinancialObligation financialObligation) {
 		stack.push(financialObligation);
-		boolean call = callNext.compareAndSet(true, false);
+		boolean call = next != null && callNext.compareAndSet(true, false);
 		
 		if(financialObligation.creditor != null)
 			validate(financialObligation.creditor);
@@ -120,7 +120,7 @@ public abstract class AbstractChainedValidator implements ChainedValidator {
 			validate(financialObligation.pex);
 
 		
-		if (next != null && call)
+		if (call)
 			next.validate(financialObligation);
 		
 		stack.pop();
