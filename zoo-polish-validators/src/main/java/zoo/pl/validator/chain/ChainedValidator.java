@@ -17,5 +17,7 @@ public interface ChainedValidator {
     public abstract void validate(FinancialObligation financialObligation);
     
     public ChainedValidator setNext(ChainedValidator validator);
+    
+    public void reset();
 
 }

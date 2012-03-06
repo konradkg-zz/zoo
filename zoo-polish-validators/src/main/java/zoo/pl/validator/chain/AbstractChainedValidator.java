@@ -1,5 +1,8 @@
 package zoo.pl.validator.chain;
 
+import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import zoo.pl.validator.visitor.domain.Creditor;
 import zoo.pl.validator.visitor.domain.Debtor;
 import zoo.pl.validator.visitor.domain.Entity;
@@ -10,6 +13,18 @@ import zoo.pl.validator.visitor.domain.RelatedEntity;
 public abstract class AbstractChainedValidator implements ChainedValidator {
 
 	protected ChainedValidator next;
+	
+	private AtomicBoolean callNext = new AtomicBoolean(true);
+	
+	protected Stack<Object> stack = new Stack<Object>();
+
+	
+	
+	@Override
+	public void reset() {
+		callNext.set(true);
+		
+	}
 
 	public ChainedValidator setNext(ChainedValidator validator) {
 		next = validator;
@@ -17,11 +32,19 @@ public abstract class AbstractChainedValidator implements ChainedValidator {
 	}
 
 	public void validate(Entity entity) {
-		if (next != null)
+		stack.push(entity);
+		boolean call = callNext.compareAndSet(true, false);
+		
+		if (next != null && call)
 			next.validate(entity);
+		
+		stack.pop();
 	}
 
 	public void validate(Creditor creditor) {
+		stack.push(creditor);
+		boolean call = callNext.compareAndSet(true, false);
+		
 		if (creditor.entity != null)
 			validate(creditor.entity);
 
@@ -31,11 +54,17 @@ public abstract class AbstractChainedValidator implements ChainedValidator {
 			}
 		}
 
-		if (next != null)
+		
+		if (next != null && call)
 			next.validate(creditor);
+		
+		stack.pop();
 	}
 
 	public void validate(Debtor debtor) {
+		stack.push(debtor);
+		boolean call = callNext.compareAndSet(true, false);
+		
 		if (debtor.entity != null)
 			validate(debtor.entity);
 
@@ -44,24 +73,43 @@ public abstract class AbstractChainedValidator implements ChainedValidator {
 				validate(r);
 			}
 		}
-		if (next != null)
-			next.validate(debtor);
+		
+		
+		if (next != null && call)
+			next.validate(debtor );
+		
+		stack.pop();
 	}
 
 	public void validate(Pex pex) {
-		if (next != null)
+		stack.push(pex);
+		boolean call = callNext.compareAndSet(true, false);
+		
+		
+		if (next != null && call)
 			next.validate(pex);
+		
+		stack.pop();
 	}
 
 	public void validate(RelatedEntity relatedEntity) {
+		stack.push(relatedEntity);
+		boolean call = callNext.compareAndSet(true, false);
+		
 		if (relatedEntity.entity != null)
 			validate(relatedEntity.entity);
 
-		if (next != null)
+		
+		if (next != null && call)
 			next.validate(relatedEntity);
+		
+		stack.pop();
 	}
 
 	public void validate(FinancialObligation financialObligation) {
+		stack.push(financialObligation);
+		boolean call = callNext.compareAndSet(true, false);
+		
 		if(financialObligation.creditor != null)
 			validate(financialObligation.creditor);
 		
@@ -71,8 +119,11 @@ public abstract class AbstractChainedValidator implements ChainedValidator {
 		if(financialObligation.pex != null)
 			validate(financialObligation.pex);
 
-		if (next != null)
+		
+		if (next != null && call)
 			next.validate(financialObligation);
+		
+		stack.pop();
 	}
 
 	protected void log(String log) {

@@ -11,13 +11,18 @@ public class Main {
 		
 		FinancialObligation fo = new FinancialObligation();
 		validator.validate(fo);
+		validator.reset();
 		
 		System.out.println("-------------------");
 		validator.validate(fo.debtor);
+		validator.reset();
+		
 	
 		System.out.println("-------------------");
 		fo.debtor = null;
 		validator.validate(fo);
+		validator.reset();
+		
 	}
 
 }
