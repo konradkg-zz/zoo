@@ -9,11 +9,6 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 public class ValidatorTestCase {
 	
 	@Test
-	public void nip2() {
-		Assert.assertTrue(Validator.isValidNip("9451989673"));
-	}
-	
-	@Test
 	public void pesel4() {
 		Assert.assertFalse(Validator.isValidPesel("00000000000"));
 	}
