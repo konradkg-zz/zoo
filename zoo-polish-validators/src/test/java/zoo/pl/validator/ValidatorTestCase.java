@@ -9,29 +9,8 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 public class ValidatorTestCase {
 	
 	@Test
-	public void nip1() {
-		Assert.assertTrue(Validator.isValidNip("655-140-24-30"));		
-		Assert.assertTrue(Validator.isValidNip("655-14-02-430"));
-	}
-	
-	@Test
 	public void nip2() {
 		Assert.assertTrue(Validator.isValidNip("9451989673"));
-	}
-	
-	@Test
-	public void pesel1() {
-		Assert.assertTrue(Validator.isValidPesel("77021910573"));
-	}
-	
-	@Test
-	public void pesel2() {
-		Assert.assertTrue(Validator.isValidPesel("77051009920"));
-	}
-	
-	@Test
-	public void pesel3() {
-		Assert.assertTrue(Validator.isValidPesel("08291801984"));
 	}
 	
 	@Test
@@ -48,11 +27,6 @@ public class ValidatorTestCase {
 	@Test
 	public void pesel6() {
 		Assert.assertFalse(Validator.isValidPesel("11000000006"));
-	}
-	
-	@Test
-	public void regon1() {
-		Assert.assertTrue(Validator.isValidRegon("121330459"));
 	}
 	
 	@Test
