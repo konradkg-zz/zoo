@@ -27,6 +27,10 @@ public class IntegerAutonumberGeneratorTestCase {
 		protected Integer getAutoId0(int node, int range) {
 			return numbersProvider.getAndAdd(range);
 		}
+		@Override
+		protected Integer convertToTargetType(Number number) {
+			return number.intValue();
+		}
 		
 	}
 }
