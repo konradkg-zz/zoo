@@ -2,6 +2,8 @@ package zoo.daroo.autonumber;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -20,6 +22,11 @@ public class IntegerAutonumberGeneratorTestCase {
 	}
 	
 	private static class IntegerAutonumberGenerator extends AutonumberGeneratorBase<Integer> {
+		private final AtomicInteger numbersProvider = new AtomicInteger(0);
+		@Override
+		protected Integer getAutoId0(int node, int range) {
+			return numbersProvider.getAndAdd(range);
+		}
 		
 	}
 }
