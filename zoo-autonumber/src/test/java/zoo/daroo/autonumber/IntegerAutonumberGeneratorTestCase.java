@@ -40,7 +40,7 @@ public class IntegerAutonumberGeneratorTestCase {
 		final IAutonumberGenerator<Integer> autonumberGenerator = new IntegerAutonumberGenerator();
 		autonumberGenerator.setCachedAutoIdRange(DEFAULT_NODE, 3);
 
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 5000; i++) {
 			final Integer result = autonumberGenerator.getCachedAutoId(DEFAULT_NODE);
 			assertEquals(i, result.intValue());
 		}
@@ -94,6 +94,8 @@ public class IntegerAutonumberGeneratorTestCase {
 			assertEquals(count++, r.intValue());
 		}
 
+		final int numbersProviderLast = ((IntegerAutonumberGenerator) autonumberGenerator).numbersProvider.get();
+		assertTrue(numbersProviderLast - count <= 3); 
 	}
 
 	private static class IntegerAutonumberGenerator extends AutonumberGeneratorBase<Integer> {
