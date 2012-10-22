@@ -71,7 +71,7 @@ public abstract class AutonumberGeneratorBase<T extends Number> implements IAuto
 					final T externalNextId = getAutoId0(node, range);
 					nextId = externalNextId.longValue();
 					current.set(nextId);
-					last.set(nextId + range);
+					last.set(nextId + range - 1);
 					return externalNextId;
 				}
 			}
