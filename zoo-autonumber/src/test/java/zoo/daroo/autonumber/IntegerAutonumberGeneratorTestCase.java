@@ -87,6 +87,7 @@ public class IntegerAutonumberGeneratorTestCase {
 		}
 		
 		executorService.shutdown();
+		System.out.println("Numbers generation DONE.");
 		
 		final TreeSet<Integer> sortedSet = new TreeSet<Integer>(resultMap.keySet());
 		int count = 0;

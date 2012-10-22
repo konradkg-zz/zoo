@@ -68,17 +68,15 @@ public abstract class AutonumberGeneratorBase<T extends Number> implements IAuto
 		public T getNextId() {
 			r.lock();
 			try {
-				long lastId = last;
 				long nextId = current.incrementAndGet();
-				if (nextId <= lastId)
+				if (nextId <= last)
 					return convertToTargetType(nextId);
 				
 				r.unlock();
 				w.lock();
 				try {
-					lastId = last;
 					nextId = current.incrementAndGet();
-					if (nextId <= lastId)
+					if (nextId <= last)
 						return convertToTargetType(nextId);
 					
 					final T externalNextId = getAutoId0(node, range);
@@ -86,8 +84,6 @@ public abstract class AutonumberGeneratorBase<T extends Number> implements IAuto
 					current.set(nextId);
 					last = nextId + range - 1;
 					return externalNextId;
-					
-					
 				} finally {
 					r.lock();
 					w.unlock();
