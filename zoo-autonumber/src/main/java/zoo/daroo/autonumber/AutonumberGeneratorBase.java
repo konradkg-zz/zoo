@@ -102,42 +102,4 @@ public abstract class AutonumberGeneratorBase<T extends Number> implements IAuto
 			return range;
 		}
 	}
-	
-	
-	/*private class AutoId {
-		private final int range;
-		private final int node;
-
-		private final AtomicLong current = new AtomicLong();
-		private final AtomicLong last = new AtomicLong(Long.MIN_VALUE);
-
-		AutoId(int node, int range) {
-			this.node = node;
-			this.range = range;
-		}
-
-		public T getNextId() {
-			long lastId = last.get();
-			long nextId = current.incrementAndGet();
-
-			if (nextId <= lastId)
-				return convertToTargetType(nextId);
-
-			synchronized (this) {
-				if (last.compareAndSet(lastId, lastId)) {
-					final T externalNextId = getAutoId0(node, range);
-					nextId = externalNextId.longValue();
-					current.set(nextId);
-					last.set(nextId + range - 1);
-					return externalNextId;
-				}
-			}
-
-			return getNextId();
-		}
-
-		public int getRange() {
-			return range;
-		}
-	}*/
 }
