@@ -3,8 +3,6 @@ package zoo.daroo.autonumber;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public abstract class AutonumberGeneratorBase<T extends Number> implements IAutonumberGenerator<T> {
 
@@ -48,50 +46,32 @@ public abstract class AutonumberGeneratorBase<T extends Number> implements IAuto
 	protected abstract T getAutoId0(int node, int range);
 
 	protected abstract T convertToTargetType(Number number);
-	
+
 	private class AutoId {
 		private final int range;
 		private final int node;
 
 		private final AtomicLong current = new AtomicLong();
 		private volatile long last = Long.MIN_VALUE;
-		
-		private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
-		private final Lock r = rwl.readLock();
-	    private final Lock w = rwl.writeLock();
 
 		AutoId(int node, int range) {
 			this.node = node;
 			this.range = range;
 		}
 
-		public T getNextId() {
-			r.lock();
-			try {
-				long nextId = current.incrementAndGet();
-				if (nextId <= last)
-					return convertToTargetType(nextId);
-				
-				r.unlock();
-				w.lock();
-				try {
-					nextId = current.incrementAndGet();
-					if (nextId <= last)
-						return convertToTargetType(nextId);
-					
-					final T externalNextId = getAutoId0(node, range);
-					nextId = externalNextId.longValue();
-					current.set(nextId);
-					last = nextId + range - 1;
-					return externalNextId;
-				} finally {
-					r.lock();
-					w.unlock();
-				}
-				
-			} finally {
-				r.unlock();
-			}
+		//synchronized is faster than RW locks
+		public synchronized T getNextId() {
+
+			long nextId = current.incrementAndGet();
+			if (nextId <= last)
+				return convertToTargetType(nextId);
+
+			final T externalNextId = getAutoId0(node, range);
+			nextId = externalNextId.longValue();
+			current.set(nextId);
+			last = nextId + range - 1;
+			return externalNextId;
+
 		}
 
 		public int getRange() {
