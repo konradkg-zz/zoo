@@ -7,29 +7,35 @@ import java.util.concurrent.atomic.AtomicLong;
 public abstract class AutonumberGeneratorBase<T extends Number> implements IAutonumberGenerator<T> {
 	
 	private ConcurrentMap<Integer, AutoId> nodesMap = new ConcurrentHashMap<Integer, AutoId>();
-
+	private final static int DEFAULT_CACHED_RANGE = 10;
+	
 	@Override
-	public T getCachedAutoId(int node, int range) {
+	public T getCachedAutoId(int node) {
+		return getCachedAutoIdInternal(node, DEFAULT_CACHED_RANGE).getNextId();
+	}
+	
+	@Override
+	public int setCachedAutoIdRange(int node, int range) {
+		final AutoId autoId = getCachedAutoIdInternal(node, range);
+		return autoId.getRange();
+	}
+
+	private AutoId getCachedAutoIdInternal(int node, int range) {
 		AutoId autoId = nodesMap.get(node);
 		if(autoId != null)
-			return autoId.getNextId();
+			return autoId;
 		
 		autoId = new AutoId(node, range);
 		if(nodesMap.putIfAbsent(node, autoId) == null) {
-			return autoId.getNextId();
+			return autoId;
 		} else {
-			return nodesMap.get(node).getNextId();
+			return nodesMap.get(node);
 		}
 	}
 
 	@Override
 	public T getAutoId(int node, int range) {
 		return getAutoId0(node, range);
-	}
-
-	@Override
-	public T getCachedAutoId(int node) {
-		return getCachedAutoId(node, 1);
 	}
 	
 	@Override
@@ -72,6 +78,9 @@ public abstract class AutonumberGeneratorBase<T extends Number> implements IAuto
 			
 			return getNextId();
 		}
-	}
 
+		public int getRange() {
+			return range;
+		}
+	}
 }
