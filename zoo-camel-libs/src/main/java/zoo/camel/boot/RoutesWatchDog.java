@@ -202,6 +202,10 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 
 		public void onCreate(Path path) {
 			try (InputStream is = tryOpen(path)) {
+				if(!isValid(path)) {
+					logger.warn("Not supported file or invalid file content: " + path);
+					return;
+				}
 				final RoutesDefinition routes = camelContext.loadRoutesDefinition(is);
 				final List<RouteDefinition> routesList = routes.getRoutes();
 				camelContext.addRouteDefinitions(routesList);
@@ -233,6 +237,11 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 		private void removeRoute(String name) throws Exception {
 			camelContext.stopRoute(name, 10, TimeUnit.SECONDS);
 			logger.info("Remove route [" + name + "]: " + camelContext.removeRoute(name));
+		}
+		
+		private boolean isValid(Path path) throws IOException {
+			final String contentType = Files.probeContentType(path);
+			return contentType != null && contentType.equals("text/xml");
 		}
 
 		private InputStream tryOpen(Path path) throws IOException {
