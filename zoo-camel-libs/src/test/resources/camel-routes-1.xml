@@ -2,7 +2,7 @@
 <routes xmlns="http://camel.apache.org/schema/spring"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
-	<route>
+	<route id="test_route1">
       <!-- read input from the console using the stream component -->
       <from uri="stream:in?promptMessage=Enter something: "/>
       <!-- transform the input to upper case using the simple language -->

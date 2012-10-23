@@ -7,7 +7,6 @@ import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -131,7 +130,13 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 	}
 	
 	public void onDelete(Path path) {
-	    
+	    try {
+		camelContext.stopRoute("test_route1");
+		System.out.println("Remove route: " + camelContext.removeRoute("test_route1"));
+            } catch (Exception e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+            }
 	}
 	
 	public void onModify(Path path) {
@@ -146,6 +151,6 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
      */
 
     
-
+    //http://camel.apache.org/loading-routes-from-xml-files.html
     // http://docs.oracle.com/javase/tutorial/essential/io/notification.html
 }
