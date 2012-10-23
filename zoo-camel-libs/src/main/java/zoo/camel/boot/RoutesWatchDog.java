@@ -164,7 +164,7 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 		
 		private InputStream tryOpen(Path path) throws IOException {
 			IOException error = null;
-			for(int i = 1; i <= 10; i++) {
+			for(int i = 1; i<=10; i++) {
 				try {
 					return Files.newInputStream(path, StandardOpenOption.READ);
 				} catch (IOException e) {
