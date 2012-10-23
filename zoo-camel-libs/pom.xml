@@ -25,6 +25,16 @@
 			<artifactId>camel-spring-javaconfig</artifactId>
 			<version>${camelVersion}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-exec</artifactId>
+			<version>${camelVersion}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-stream</artifactId>
+			<version>${camelVersion}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
