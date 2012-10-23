@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<routes xmlns="http://camel.apache.org/schema/spring"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+	<route id="camel-routes-http-1.xml-jetty-to-log">
+    	<from uri="jetty:http://0.0.0.0:8080/test"/>
+    	<convertBodyTo type="java.lang.String"/>
+    	<to uri="log:dupa"/>
+
+    </route>
+	<route id="camel-routes-http-1.xml-console-to-jetty">
+    	<from uri="stream:in?promptMessage=Enter something: "/>
+    	<setHeader headerName="CamelHttpMethod">
+        	<constant>POST</constant>
+    	</setHeader>
+    	<to uri="http4://0.0.0.0:8080/test"/>
+    </route>
+</routes>
