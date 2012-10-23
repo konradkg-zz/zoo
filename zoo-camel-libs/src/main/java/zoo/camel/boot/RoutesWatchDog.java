@@ -1,6 +1,5 @@
 package zoo.camel.boot;
 
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
@@ -43,7 +42,7 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 
 	public void start() throws IOException {
 		watcher = contextDir.getFileSystem().newWatchService();
-		contextDir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+		contextDir.register(watcher, ENTRY_DELETE, ENTRY_MODIFY);
 
 		if (started.compareAndSet(false, true)) {
 			watchDogTask = new Thread(new WatchDogTask(), "RoutesWatchDogTask");
@@ -94,10 +93,6 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 
 						@SuppressWarnings("unchecked")
 						final Path filename = contextDir.resolve(((WatchEvent<Path>) event).context());
-//						if (event.kind() == ENTRY_CREATE) {
-//							eventsListener.onCreate(filename);
-//							continue;
-//						}
 						if (event.kind() == ENTRY_DELETE) {
 							eventsListener.onDelete(filename);
 						}
@@ -153,10 +148,6 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 			}
 		}
 
-//		public void onModify(Path path) {
-//			//onCreate(path);
-//		}
-		
 		private void removeRoute(String name) throws Exception{
 			camelContext.stopRoute(name, 10, TimeUnit.SECONDS);
 			logger.info("Remove route [" + name + "]: " + camelContext.removeRoute(name));
