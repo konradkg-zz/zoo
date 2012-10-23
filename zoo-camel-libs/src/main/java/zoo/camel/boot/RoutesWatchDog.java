@@ -15,142 +15,158 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.camel.model.ModelCamelContext;
+import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.RoutesDefinition;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 public class RoutesWatchDog implements InitializingBean, DisposableBean {
 
-    final Path contextDir = Paths.get("D:/temp/contexts");
-    private WatchService watcher;
-    private Thread watchDogTask;
+	final Path contextDir = Paths.get("p:/temp/contexts");
+	private WatchService watcher;
+	private Thread watchDogTask;
 
-    private AtomicBoolean started = new AtomicBoolean(false);
-    private final EventsListener eventsListener = new EventsListener();
-    
-    private ModelCamelContext camelContext;
-    
-    public void start() throws IOException {
-	watcher = contextDir.getFileSystem().newWatchService();
-	contextDir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+	private AtomicBoolean started = new AtomicBoolean(false);
+	private final EventsListener eventsListener = new EventsListener();
 
-	if (started.compareAndSet(false, true)) {
-	    watchDogTask = new Thread(new WatchDogTask(), "RoutesWatchDogTask");
-	    watchDogTask.setDaemon(true);
-	    watchDogTask.start();
-	}
-    }
-
-    public void stop() throws IOException {
-	if (started.compareAndSet(true, false)) {
-	    Thread t = watchDogTask;
-	    if (t != null) {
-		t.interrupt();
-		watchDogTask = null;
-	    }
-
-	    if (watcher != null) {
-		watcher.close();
-	    }
-	}
-    }
-    
-    @Override
-    public void afterPropertiesSet() throws Exception {
-	start();
+	private ModelCamelContext camelContext;
 	
-    }
-    
-    @Override
-    public void destroy() throws Exception {
-	stop();
-    }
-    
-    public void setCamelContext(ModelCamelContext camelContext) {
-        this.camelContext = camelContext;
-    }
+	private Log logger = LogFactory.getLog(getClass());
 
+	public void start() throws IOException {
+		watcher = contextDir.getFileSystem().newWatchService();
+		contextDir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
 
-
-    private class WatchDogTask implements Runnable {
-	@Override
-	public void run() {
-	    while (true) {
-		try {
-		    final WatchKey watchKey = watcher.take();
-		    List<WatchEvent<?>> events = watchKey.pollEvents();
-		    for (WatchEvent<?> event : events) {
-			if (event.kind() == OVERFLOW)
-			    continue;
-
-			@SuppressWarnings("unchecked")
-                        final Path filename = contextDir.resolve(((WatchEvent<Path>) event).context());
-			if (event.kind() == ENTRY_CREATE) {
-			    System.out.println("Created: " + event.context().toString());
-			    eventsListener.onCreate(filename);
-			    continue;
-			}
-			if (event.kind() == ENTRY_DELETE) {
-			    System.out.println("Delete: " + event.context().toString());
-			    eventsListener.onDelete(filename);
-			}
-			if (event.kind() == ENTRY_MODIFY) {
-			    System.out.println("Modify: " + event.context().toString());
-			    eventsListener.onModify(filename);
-			}
-		    }
-		    boolean valid = watchKey.reset();
-		    if (!valid) {
-			System.out.println("Directory no longer valid!!!");
-			break;
-		    }
-		} catch (InterruptedException e) {
-		    return;
-		} catch (Throwable e) {
-		    System.out.println(e.getMessage());
+		if (started.compareAndSet(false, true)) {
+			watchDogTask = new Thread(new WatchDogTask(), "RoutesWatchDogTask");
+			watchDogTask.setDaemon(true);
+			watchDogTask.start();
 		}
-	    }
 	}
-    }
-    
-    private class EventsListener {
-	
-	public void onCreate(Path path) {
-	    final File file = path.toFile();
-	    try (InputStream is = new FileInputStream(file)) {
-	        RoutesDefinition routes = camelContext.loadRoutesDefinition(is);
-	        camelContext.addRouteDefinitions(routes.getRoutes());
-            } catch (Exception e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-            }
-	}
-	
-	public void onDelete(Path path) {
-	    try {
-		camelContext.stopRoute("test_route1");
-		System.out.println("Remove route: " + camelContext.removeRoute("test_route1"));
-            } catch (Exception e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-            }
-	}
-	
-	public void onModify(Path path) {
-	    
-	}
-	
-    }
-    /*
-     * InputStream is = getClass().getResourceAsStream("barRoute.xml");
-     * RoutesDefinition routes = context.loadRoutesDefinition(is);
-     * context.addRouteDefinitions(routes.getRoutes());
-     */
 
-    
-    //http://camel.apache.org/loading-routes-from-xml-files.html
-    // http://docs.oracle.com/javase/tutorial/essential/io/notification.html
+	public void stop() throws IOException {
+		if (started.compareAndSet(true, false)) {
+			Thread t = watchDogTask;
+			if (t != null) {
+				t.interrupt();
+				watchDogTask = null;
+			}
+
+			if (watcher != null) {
+				watcher.close();
+			}
+		}
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		start();
+
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		stop();
+	}
+
+	public void setCamelContext(ModelCamelContext camelContext) {
+		this.camelContext = camelContext;
+	}
+
+	private class WatchDogTask implements Runnable {
+		@Override
+		public void run() {
+			while (true) {
+				try {
+					final WatchKey watchKey = watcher.take();
+					List<WatchEvent<?>> events = watchKey.pollEvents();
+					for (WatchEvent<?> event : events) {
+						if (event.kind() == OVERFLOW)
+							continue;
+
+						@SuppressWarnings("unchecked")
+						final Path filename = contextDir.resolve(((WatchEvent<Path>) event).context());
+						if (event.kind() == ENTRY_CREATE) {
+							logger.info("Created: " + event.context().toString());
+							eventsListener.onCreate(filename);
+							continue;
+						}
+						if (event.kind() == ENTRY_DELETE) {
+							logger.info("Delete: " + event.context().toString());
+							eventsListener.onDelete(filename);
+						}
+						if (event.kind() == ENTRY_MODIFY) {
+							logger.info("Modify: " + event.context().toString());
+							eventsListener.onModify(filename);
+						}
+					}
+					boolean valid = watchKey.reset();
+					if (!valid) {
+						logger.warn("Directory no longer valid!!!");
+						break;
+					}
+				} catch (InterruptedException e) {
+					return;
+				} catch (Throwable e) {
+					logger.error("Error occured: ", e);
+				}
+			}
+		}
+	}
+
+	private class EventsListener {
+		
+		private final ConcurrentMap<Path, RoutesDefinition> routesMap = new ConcurrentHashMap<>();
+		
+		public void onCreate(Path path) {
+			final File file = path.toFile();
+			try (InputStream is = new FileInputStream(file)) {
+				
+				final RoutesDefinition routes = camelContext.loadRoutesDefinition(is);
+				final List<RouteDefinition> routesList = routes.getRoutes();
+				camelContext.addRouteDefinitions(routesList);
+				routesMap.put(path, routes);
+				logger.info("Routes loaded from " + path);
+			} catch (Exception e) {
+				logger.error(e);
+			}
+		}
+
+		public void onDelete(Path path) {
+			final RoutesDefinition routes = routesMap.remove(path);
+			if(routes == null) {
+				logger.warn("Routes file: " + path + " not registered. Nothing to remove.");
+				return;
+			}
+			
+			for(RouteDefinition rd : routes.getRoutes()) {
+				try {
+					removeRoute(rd.getId());
+				} catch (Exception e) {
+					logger.error(e);
+				}
+			}
+		}
+
+		public void onModify(Path path) {
+			//onCreate(path);
+		}
+		
+		private void removeRoute(String name) throws Exception{
+			camelContext.stopRoute(name, 10, TimeUnit.SECONDS);
+			logger.info("Remove route [" + name + "]: " + camelContext.removeRoute(name));
+		}
+
+	}
+
+	// http://camel.apache.org/loading-routes-from-xml-files.html
+	// http://docs.oracle.com/javase/tutorial/essential/io/notification.html
 }
