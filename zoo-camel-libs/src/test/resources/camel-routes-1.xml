@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<routes xmlns="http://camel.apache.org/schema/spring"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+	<route>
+      <!-- read input from the console using the stream component -->
+      <from uri="stream:in?promptMessage=Enter something: "/>
+      <!-- transform the input to upper case using the simple language -->
+      <!-- you can also use other languages such as groovy, ognl, mvel, javascript etc. -->
+      <transform>
+        <simple>${body.toUpperCase()}</simple>
+      </transform>
+      <!-- and then print to the console -->
+      <to uri="stream:out"/>
+    </route>
+</routes>

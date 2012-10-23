@@ -5,7 +5,7 @@ import org.apache.camel.spring.Main;
 public class Standalone {
     
     private Main main;
-    private RoutesWatchDog routesWatchDog = new RoutesWatchDog();
+    //private RoutesWatchDog routesWatchDog = new RoutesWatchDog();
     
     public static void main(String[] args) throws Exception {
 	Standalone standalone = new Standalone();
@@ -16,7 +16,8 @@ public class Standalone {
 	main = new Main();
 	main.enableHangupSupport();
 	main.setApplicationContextUri("classpath:META-INF/spring/camel-context.xml");
-	routesWatchDog.start();
+	main.getCamelContexts();
+	//routesWatchDog.start();
 	System.out.println("Starting Camel. Use ctrl + c to terminate the JVM.\n");
         main.run();
     }
