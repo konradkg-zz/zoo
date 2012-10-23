@@ -5,12 +5,12 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
@@ -94,18 +94,15 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 
 						@SuppressWarnings("unchecked")
 						final Path filename = contextDir.resolve(((WatchEvent<Path>) event).context());
-						if (event.kind() == ENTRY_CREATE) {
-							logger.info("Created: " + event.context().toString());
-							eventsListener.onCreate(filename);
-							continue;
-						}
+//						if (event.kind() == ENTRY_CREATE) {
+//							eventsListener.onCreate(filename);
+//							continue;
+//						}
 						if (event.kind() == ENTRY_DELETE) {
-							logger.info("Delete: " + event.context().toString());
 							eventsListener.onDelete(filename);
 						}
 						if (event.kind() == ENTRY_MODIFY) {
-							logger.info("Modify: " + event.context().toString());
-							eventsListener.onModify(filename);
+							eventsListener.onCreate(filename);
 						}
 					}
 					boolean valid = watchKey.reset();
@@ -127,8 +124,7 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 		private final ConcurrentMap<Path, RoutesDefinition> routesMap = new ConcurrentHashMap<>();
 		
 		public void onCreate(Path path) {
-			final File file = path.toFile();
-			try (InputStream is = new FileInputStream(file)) {
+			try (InputStream is = tryOpen(path)) {
 				
 				final RoutesDefinition routes = camelContext.loadRoutesDefinition(is);
 				final List<RouteDefinition> routesList = routes.getRoutes();
@@ -147,6 +143,7 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 				return;
 			}
 			
+			logger.info("Removing routes defined in file: " + path);
 			for(RouteDefinition rd : routes.getRoutes()) {
 				try {
 					removeRoute(rd.getId());
@@ -156,13 +153,32 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 			}
 		}
 
-		public void onModify(Path path) {
-			//onCreate(path);
-		}
+//		public void onModify(Path path) {
+//			//onCreate(path);
+//		}
 		
 		private void removeRoute(String name) throws Exception{
 			camelContext.stopRoute(name, 10, TimeUnit.SECONDS);
 			logger.info("Remove route [" + name + "]: " + camelContext.removeRoute(name));
+		}
+		
+		private InputStream tryOpen(Path path) throws IOException {
+			IOException error = null;
+			for(int i = 1; i <= 10; i++) {
+				try {
+					return Files.newInputStream(path, StandardOpenOption.READ);
+				} catch (IOException e) {
+					error = e;
+					logger.debug("File open attempt: " + i, e);
+					try {
+						TimeUnit.MILLISECONDS.sleep(100);
+					} catch (InterruptedException e1) {
+						Thread.currentThread().interrupt();
+						break;
+					}
+				}
+			}
+			throw error;
 		}
 
 	}
