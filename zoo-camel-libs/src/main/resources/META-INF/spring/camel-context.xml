@@ -8,6 +8,7 @@
 
   <bean id="RoutesWatchDog" class="zoo.camel.boot.RoutesWatchDog">
   		<property name="camelContext" ref="dynamicContext"/>
+  		<property name="routesDir" value="P:/temp/contexts"/>
   </bean>
   <camelContext xmlns="http://camel.apache.org/schema/spring" id="dynamicContext"/>
     

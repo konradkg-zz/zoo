@@ -29,23 +29,22 @@ import org.springframework.beans.factory.InitializingBean;
 
 public class RoutesWatchDog implements InitializingBean, DisposableBean {
 
-	final Path contextDir = Paths.get("p:/temp/contexts");
+	private Log logger = LogFactory.getLog(getClass());
+
+	private Path routesDir;
+	private ModelCamelContext camelContext;
+	
 	private WatchService watcher;
 	private Thread watchDogTask;
 
 	private AtomicBoolean started = new AtomicBoolean(false);
 	private final EventsListener eventsListener = new EventsListener();
 
-	private ModelCamelContext camelContext;
-	
-	private Log logger = LogFactory.getLog(getClass());
-
 	public void start() throws IOException {
-		watcher = contextDir.getFileSystem().newWatchService();
-		contextDir.register(watcher, ENTRY_DELETE, ENTRY_MODIFY);
-
 		if (started.compareAndSet(false, true)) {
-			watchDogTask = new Thread(new WatchDogTask(), "RoutesWatchDogTask");
+			watcher = registerNewWatchService();
+			
+			watchDogTask = new Thread(new WatchDogTask(this, watcher), "RoutesWatchDogTask");
 			watchDogTask.setDaemon(true);
 			watchDogTask.start();
 		}
@@ -53,22 +52,85 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 
 	public void stop() throws IOException {
 		if (started.compareAndSet(true, false)) {
-			Thread t = watchDogTask;
+			final Thread t = watchDogTask;
 			if (t != null) {
-				t.interrupt();
 				watchDogTask = null;
+				t.interrupt();
 			}
 
-			if (watcher != null) {
-				watcher.close();
+			final WatchService w = watcher;
+			if (w != null) {
+				watcher = null;
+				w.close();
 			}
 		}
 	}
+	
+	public void restart() {
+		logger.info("Routes watch dog is restarting...");
+		try {
+			stop();
+		} catch (IOException e) {
+			logger.error("Restart: Error occured during stop().", e);
+		}
+		try {
+			start();
+		} catch (IOException e) {
+			logger.error("Restart: Error occured during start().", e);
+		}
+	}
 
+	private void init() throws IOException {
+		//TODO: load initial routes
+		
+		start();
+	}
+	
+	private WatchService registerNewWatchService() throws IOException {
+		while(started.get()) {
+			WatchService newWatchService = null;
+			try {
+				newWatchService = routesDir.getFileSystem().newWatchService();
+				routesDir.register(newWatchService, ENTRY_DELETE, ENTRY_MODIFY);
+				return newWatchService;
+			} catch (IOException e) {
+				final String msg = "Unable to create WatchService. Reason: " + e.getMessage();
+				if(logger.isDebugEnabled()) {
+					logger.error(msg, e);
+				} else {
+					logger.error(msg);
+				}
+				
+				if(newWatchService != null) {
+					try {
+						newWatchService.close();
+					} catch (Exception ignore) {
+					}
+				}
+				
+				try {
+					TimeUnit.SECONDS.sleep(10);
+				} catch (InterruptedException e1) {
+					Thread.currentThread().interrupt();
+					throw e;
+				}
+			}
+		}
+		return null;
+	}
+	
+	EventsListener getListener() {
+		return eventsListener;
+	}
+	
+	Path getRoutesDirPath() {
+		return routesDir;
+	}
+	
+	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		start();
-
+		init();
 	}
 
 	@Override
@@ -79,8 +141,22 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 	public void setCamelContext(ModelCamelContext camelContext) {
 		this.camelContext = camelContext;
 	}
+	
+	public void setRoutesDir(String routesDir) {
+		this.routesDir = Paths.get(routesDir);
+	}
 
-	private class WatchDogTask implements Runnable {
+	private static class WatchDogTask implements Runnable {
+		private Log logger = LogFactory.getLog(getClass());
+		
+		private final WatchService watcher;
+		private final RoutesWatchDog controller;
+		
+		WatchDogTask(RoutesWatchDog controller, WatchService watcher) {
+			this.watcher = watcher;
+			this.controller = controller;
+		}
+		
 		@Override
 		public void run() {
 			while (true) {
@@ -92,23 +168,25 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 							continue;
 
 						@SuppressWarnings("unchecked")
-						final Path filename = contextDir.resolve(((WatchEvent<Path>) event).context());
+						final Path filename = controller.getRoutesDirPath().resolve(
+								((WatchEvent<Path>) event).context());
 						if (event.kind() == ENTRY_DELETE) {
-							eventsListener.onDelete(filename);
+							controller.getListener().onDelete(filename);
 						}
 						if (event.kind() == ENTRY_MODIFY) {
-							eventsListener.onCreate(filename);
+							controller.getListener().onCreate(filename);
 						}
 					}
 					boolean valid = watchKey.reset();
 					if (!valid) {
 						logger.warn("Directory no longer valid!!!");
+						controller.restart();
 						break;
 					}
 				} catch (InterruptedException e) {
 					return;
 				} catch (Throwable e) {
-					logger.error("Error occured: ", e);
+					logger.error("Unexpected error occured: ", e);
 				}
 			}
 		}
@@ -120,11 +198,11 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 		
 		public void onCreate(Path path) {
 			try (InputStream is = tryOpen(path)) {
-				
 				final RoutesDefinition routes = camelContext.loadRoutesDefinition(is);
 				final List<RouteDefinition> routesList = routes.getRoutes();
 				camelContext.addRouteDefinitions(routesList);
 				routesMap.put(path, routes);
+				
 				logger.info("Routes loaded from " + path);
 			} catch (Exception e) {
 				logger.error(e);
@@ -155,7 +233,7 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 		
 		private InputStream tryOpen(Path path) throws IOException {
 			IOException error = null;
-			for(int i = 1; i<=10; i++) {
+			for(int i = 1; i <= 10; i++) {
 				try {
 					return Files.newInputStream(path, StandardOpenOption.READ);
 				} catch (IOException e) {
