@@ -35,6 +35,7 @@
 			<artifactId>camel-stream</artifactId>
 			<version>${camelVersion}</version>
 		</dependency>
+		
 	</dependencies>
 
 	<build>
