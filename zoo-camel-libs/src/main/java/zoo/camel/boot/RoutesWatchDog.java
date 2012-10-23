@@ -143,7 +143,7 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 	}
 	
 	public void setRoutesDir(String routesDir) {
-		this.routesDir = Paths.get(routesDir);
+		this.routesDir = Paths.get(routesDir).toAbsolutePath();
 	}
 
 	private static class WatchDogTask implements Runnable {
