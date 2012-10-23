@@ -34,7 +34,7 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 
 	private Path routesDir;
 	private ModelCamelContext camelContext;
-	
+
 	private WatchService watcher;
 	private Thread watchDogTask;
 
@@ -44,7 +44,7 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 	public void start() throws IOException {
 		if (started.compareAndSet(false, true)) {
 			watcher = registerNewWatchService();
-			
+
 			watchDogTask = new Thread(new WatchDogTask(this, watcher), "RoutesWatchDogTask");
 			watchDogTask.setDaemon(true);
 			watchDogTask.start();
@@ -66,7 +66,7 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 			}
 		}
 	}
-	
+
 	public void restart() {
 		logger.info("Routes watch dog is restarting...");
 		try {
@@ -83,16 +83,16 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 
 	private void init() throws IOException {
 		try (DirectoryStream<Path> ds = Files.newDirectoryStream(routesDir, "*.{xml}")) {
-			for(Path file : ds) {
+			for (Path file : ds) {
 				eventsListener.onCreate(file);
 			}
 		}
-		
+
 		start();
 	}
-	
+
 	private WatchService registerNewWatchService() throws IOException {
-		while(started.get()) {
+		while (started.get()) {
 			WatchService newWatchService = null;
 			try {
 				newWatchService = routesDir.getFileSystem().newWatchService();
@@ -100,19 +100,19 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 				return newWatchService;
 			} catch (IOException e) {
 				final String msg = "Unable to create WatchService. Reason: " + e.getMessage();
-				if(logger.isDebugEnabled()) {
+				if (logger.isDebugEnabled()) {
 					logger.error(msg, e);
 				} else {
 					logger.error(msg);
 				}
-				
-				if(newWatchService != null) {
+
+				if (newWatchService != null) {
 					try {
 						newWatchService.close();
 					} catch (Exception ignore) {
 					}
 				}
-				
+
 				try {
 					TimeUnit.SECONDS.sleep(10);
 				} catch (InterruptedException e1) {
@@ -121,18 +121,17 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 				}
 			}
 		}
-		return null;
+		throw new IllegalStateException("Ups. registerNewWatchService() called while stopping.");
 	}
-	
+
 	EventsListener getListener() {
 		return eventsListener;
 	}
-	
+
 	Path getRoutesDirPath() {
 		return routesDir;
 	}
-	
-	
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		init();
@@ -146,22 +145,22 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 	public void setCamelContext(ModelCamelContext camelContext) {
 		this.camelContext = camelContext;
 	}
-	
+
 	public void setRoutesDir(String routesDir) {
 		this.routesDir = Paths.get(routesDir).toAbsolutePath();
 	}
 
 	private static class WatchDogTask implements Runnable {
 		private Log logger = LogFactory.getLog(getClass());
-		
+
 		private final WatchService watcher;
 		private final RoutesWatchDog controller;
-		
+
 		WatchDogTask(RoutesWatchDog controller, WatchService watcher) {
 			this.watcher = watcher;
 			this.controller = controller;
 		}
-		
+
 		@Override
 		public void run() {
 			while (true) {
@@ -198,16 +197,16 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 	}
 
 	private class EventsListener {
-		
+
 		private final ConcurrentMap<Path, RoutesDefinition> routesMap = new ConcurrentHashMap<>();
-		
+
 		public void onCreate(Path path) {
 			try (InputStream is = tryOpen(path)) {
 				final RoutesDefinition routes = camelContext.loadRoutesDefinition(is);
 				final List<RouteDefinition> routesList = routes.getRoutes();
 				camelContext.addRouteDefinitions(routesList);
 				routesMap.put(path, routes);
-				
+
 				logger.info("Routes loaded from " + path);
 			} catch (Exception e) {
 				logger.error(e);
@@ -216,13 +215,13 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 
 		public void onDelete(Path path) {
 			final RoutesDefinition routes = routesMap.remove(path);
-			if(routes == null) {
+			if (routes == null) {
 				logger.warn("Routes file: " + path + " not registered. Nothing to remove.");
 				return;
 			}
-			
+
 			logger.info("Removing routes defined in file: " + path);
-			for(RouteDefinition rd : routes.getRoutes()) {
+			for (RouteDefinition rd : routes.getRoutes()) {
 				try {
 					removeRoute(rd.getId());
 				} catch (Exception e) {
@@ -231,14 +230,14 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 			}
 		}
 
-		private void removeRoute(String name) throws Exception{
+		private void removeRoute(String name) throws Exception {
 			camelContext.stopRoute(name, 10, TimeUnit.SECONDS);
 			logger.info("Remove route [" + name + "]: " + camelContext.removeRoute(name));
 		}
-		
+
 		private InputStream tryOpen(Path path) throws IOException {
 			IOException error = null;
-			for(int i = 1; i <= 10; i++) {
+			for (int i = 1; i <= 10; i++) {
 				try {
 					return Files.newInputStream(path, StandardOpenOption.READ);
 				} catch (IOException e) {
@@ -256,7 +255,4 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 		}
 
 	}
-
-	// http://camel.apache.org/loading-routes-from-xml-files.html
-	// http://docs.oracle.com/javase/tutorial/essential/io/notification.html
 }
