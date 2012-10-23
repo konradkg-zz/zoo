@@ -6,6 +6,7 @@ import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -81,7 +82,11 @@ public class RoutesWatchDog implements InitializingBean, DisposableBean {
 	}
 
 	private void init() throws IOException {
-		//TODO: load initial routes
+		try (DirectoryStream<Path> ds = Files.newDirectoryStream(routesDir, "*.{xml}")) {
+			for(Path file : ds) {
+				eventsListener.onCreate(file);
+			}
+		}
 		
 		start();
 	}
