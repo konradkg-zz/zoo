@@ -9,6 +9,8 @@
   		<property name="brokerURL" value="vm://localBroker"/>
 	</bean>
 
+	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent"/>
+	
     <broker xmlns="http://activemq.apache.org/schema/core" brokerName="localBroker">
 		
 		<destinationPolicy>
