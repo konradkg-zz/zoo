@@ -6,10 +6,14 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
+  <import resource="classpath:META-INF/spring/service-*.xml"/>
+  
   <bean id="RoutesWatchDog" class="zoo.camel.boot.RoutesWatchDog">
   		<property name="camelContext" ref="dynamicContext"/>
   		<property name="routesDir" value="/temp/contexts"/>
   </bean>
+  
+  
   <camelContext xmlns="http://camel.apache.org/schema/spring" id="dynamicContext"/>
     
 </beans>
