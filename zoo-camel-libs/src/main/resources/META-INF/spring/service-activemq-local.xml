@@ -5,7 +5,11 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
   http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
 
-    <broker xmlns="http://activemq.apache.org/schema/core" brokerName="CamelInternalAMQ">
+	<bean id="jms-local" class="org.apache.activemq.camel.component.ActiveMQComponent">
+  		<property name="brokerURL" value="vm://localBroker"/>
+	</bean>
+
+    <broker xmlns="http://activemq.apache.org/schema/core" brokerName="localBroker">
 		
 		<destinationPolicy>
             <policyMap>
@@ -44,7 +48,7 @@
 		  
         <transportConnectors>
             <transportConnector name="nio" uri="nio://0.0.0.0:6601"/>
-            <transportConnector name="vm" uri="vm://localhost"/>
+            <transportConnector name="vm" uri="vm://localBroker"/>
         	
         </transportConnectors>
 
