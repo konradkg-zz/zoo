@@ -10,3 +10,12 @@ CALL FTL_CREATE_INDEX('PUBLIC', 'TEST', NULL);
 INSERT INTO TEST VALUES(1, 'Hello World');
 INSERT INTO TEST VALUES(2, 'Hello World1');
 INSERT INTO TEST VALUES(3, 'Dupa');
+
+
+ALTER TABLE TEST RENAME TO TEST1;
+
+
+--FTL_CREATE_INDEX(schemaNameString, tableNameString, columnListString)
+--FTL_SEARCH(queryString, limitInt, offsetInt): result set
+--FTL_REINDEX()
+--FTL_DROP_ALL()
