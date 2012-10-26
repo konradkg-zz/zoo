@@ -1,4 +1,4 @@
-package zoo.daroo.h2.mem;
+package zoo.daroo.h2.mem.tryouts;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
