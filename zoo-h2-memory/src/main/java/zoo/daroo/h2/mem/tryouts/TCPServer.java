@@ -30,7 +30,7 @@ public class TCPServer {
 	}
 
 	public static void mem() throws Exception {
-		JdbcConnectionPool cp = JdbcConnectionPool.create("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "sa", "");
+		JdbcConnectionPool cp = JdbcConnectionPool.create("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "sa2", "");
 		Connection conn = cp.getConnection();
 		conn.createStatement().executeUpdate("CREATE TABLE data ("
 				+ " key VARCHAR(255) PRIMARY KEY,"
