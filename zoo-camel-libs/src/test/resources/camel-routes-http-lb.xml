@@ -4,10 +4,13 @@
 	xsi:schemaLocation="http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 	
 	<route id="camel-routes-http-lb.xml-1">
-    	<from uri="jetty:http://0.0.0.0:8080/test?matchOnUriPrefix=true&amp;disableStreamCache=true&amp;enableMultipartFilter=false&amp;sessionSupport=true&amp;traceEnabled=true"/>
-    	<to uri="jetty:http://vdevsrv4808:8080/dspone-portal-web-portal/com.deltavista.portal.login.Login/?bridgeEndpoint=true&amp;throwExceptionOnFailure=false&amp;traceEnabled=true"/>
+    	<from uri="jetty:http://0.0.0.0:8080/test?matchOnUriPrefix=true&amp;sessionSupport=true"/>
+    	<to uri="jetty:http://www.google.com/?bridgeEndpoint=true&amp;throwExceptionOnFailure=false"/>
+    	<!-- 
+    	<to uri="jetty:http://vdevsrv4808:8080/dspone-portal-web-portal/com.deltavista.portal.login.Login/?bridgeEndpoint=true&amp;throwExceptionOnFailure=false"/>
+    	 -->
     </route>
 </routes>
 
-
+<!--&amp;disableStreamCache=true&amp;enableMultipartFilter=false&amp;traceEnabled=true-->
 <!-- &amp;disableStreamCache=true&amp;enableMultipartFilter=false -->
