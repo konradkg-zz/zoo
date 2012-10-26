@@ -19,7 +19,7 @@ public class JdbcConnectionPoolBean implements DataSource, InitializingBean, Dis
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		//"jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
-		this.jdbcConnectionPool = JdbcConnectionPool.create("jdbc:h2:mem:pex_lite", "sa2", "");
+		this.jdbcConnectionPool = JdbcConnectionPool.create("jdbc:h2:mem:pex_online", "sa2", "");
 	}
 	
 	@Override

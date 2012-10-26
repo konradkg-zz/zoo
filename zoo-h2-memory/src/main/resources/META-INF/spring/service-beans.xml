@@ -14,7 +14,7 @@
 	</bean>
 
     <bean id="Server" class="zoo.daroo.h2.mem.Server">
-    	
+    	<property name="initScriptLocation" value="classpath*:aa.xml"/>
     </bean>
 
     
