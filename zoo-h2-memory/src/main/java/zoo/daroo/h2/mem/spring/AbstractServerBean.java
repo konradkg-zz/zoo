@@ -17,22 +17,28 @@ public abstract class AbstractServerBean implements InitializingBean, Disposable
 	private boolean enable;
 	protected List<String> parameters = new ArrayList<String>();
 	
-	Log logger = LogFactory.getLog(getClass());
+	protected Log logger = LogFactory.getLog(getClass());
 	
+	private String serverName = getClass().getSimpleName();
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		
 		if(enable) {
 			server = createServer(parameters.toArray(new String[0]));
-			server.setOut(System.err);
-			//logger.
+			logger.info("Starting " + serverName + " ...");
 			server.start();
+			logger.info("Server " + serverName + " listening on port: " + server.getPort());
+		} else {
+			logger.info("Server " + serverName + " is disabled in configuration.");
 		}
 	}
 	
 	@Override
 	public void destroy() throws Exception {
 		if(server != null) {
+			logger.info("Stopping " + serverName + " ...");
 			server.stop();
+			logger.info("Server " + serverName + " stopped.");
 		}
 	}
 
