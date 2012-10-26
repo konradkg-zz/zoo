@@ -13,18 +13,17 @@ public abstract class AbstractServerBean implements InitializingBean, Disposable
 	private Server server;
 	
 	private boolean enable;
-	private List<String> parameters = new ArrayList<String>();
+	protected List<String> parameters = new ArrayList<String>();
 	
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-	
 		if(enable) {
 			server = createServer(parameters.toArray(new String[0]));
 			server.start();
 		}
 	}
-
+	
 	@Override
 	public void destroy() throws Exception {
 		if(server != null) {
@@ -38,10 +37,9 @@ public abstract class AbstractServerBean implements InitializingBean, Disposable
 		this.enable = enable;
 	}
 	
-	public void setAllowOthers(boolean allowOthers) {
-		if(allowOthers) { 
-			this.parameters.add("-tcpAllowOthers");
+	public void setTrace(boolean trace) {
+		if(trace) { 
+			parameters.add("-trace");
 		}
 	}
-	
 }
