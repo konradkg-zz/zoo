@@ -15,12 +15,7 @@ public class Server implements InitializingBean, DisposableBean {
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		
-		
-		// TODO init mem connection
-		
-		// create in-memory structures
-		
+		internalDbManager.initDatabase();		
 	}
 	
 	@Override

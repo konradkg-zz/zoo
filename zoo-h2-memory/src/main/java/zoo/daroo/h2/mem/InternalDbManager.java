@@ -1,15 +1,24 @@
 package zoo.daroo.h2.mem;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.Resource;
 
 import zoo.daroo.h2.mem.spring.JdbcConnectionPoolBean;
 
 public class InternalDbManager {
 	public final static String BEAN_ID = "InternalDbManager";
+	private final static Log Logger = LogFactory.getLog(InternalDbManager.class);
 	
 	@Inject
 	@Named(JdbcConnectionPoolBean.BEAN_ID)
@@ -17,8 +26,40 @@ public class InternalDbManager {
 	
 	private Resource initScriptLocation;
 
-	public void initDatabase() {
+	
+	public void initDatabase() throws IOException, SQLException {
+		final String sql = readFile(initScriptLocation);
+		executeSql(sql);
+	}
+	
+	private String readFile(Resource resource) throws IOException {
+		final InputStream is = new BufferedInputStream(resource.getInputStream());
+		final byte[] buffer = new byte[1024];
+		final StringBuilder str = new StringBuilder();
+		try {
+			while(is.read(buffer) != -1) {
+				str.append(new String(buffer, "UTF-8"));
+			}
+		} finally {
+			is.close();
+		}
 		
+		return str.toString();
+	}
+	
+	private void executeSql(String sql) throws SQLException {
+		Connection con = null;
+		try {
+			con = dataSource.getConnection();
+			if(Logger.isDebugEnabled()) {
+				Logger.debug("Executing sql: " + sql);
+			}
+			con.createStatement().execute(sql);
+		} finally {
+			if(con != null) {
+				con.close();
+			}
+		}
 	}
 	
 	
