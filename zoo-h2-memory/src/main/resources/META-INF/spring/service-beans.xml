@@ -11,19 +11,19 @@
     
     <bean id="TcpServerBean" class="zoo.daroo.h2.mem.spring.TcpServerBean" depends-on="Server">
     	<property name="enable" value="true"/>
-    	<property name="trace" value="true"/>
+    	<property name="trace" value="false"/>
     	<property name="allowOthers" value="true"/>
     </bean>
     
     <bean id="PostgreSqlServerBean" class="zoo.daroo.h2.mem.spring.PostgreSqlServerBean" depends-on="Server">
     	<property name="enable" value="false"/>
-    	<property name="trace" value="true"/>
+    	<property name="trace" value="false"/>
     	<property name="allowOthers" value="true"/>
     </bean>
     
     <bean id="WebServerBean" class="zoo.daroo.h2.mem.spring.WebServerBean" depends-on="Server">
     	<property name="enable" value="true"/>
-    	<property name="trace" value="true"/>
+    	<property name="trace" value="false"/>
     </bean>
     
     
