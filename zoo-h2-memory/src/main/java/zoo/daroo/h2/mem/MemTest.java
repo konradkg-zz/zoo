@@ -9,7 +9,7 @@ import org.h2.jdbcx.JdbcConnectionPool;
 import org.springframework.jdbc.support.JdbcUtils;
 
 
-public class A {
+public class MemTest {
     // http://www.h2database.com/html/tutorial.html#fulltext
     // FullTextLucene
 
