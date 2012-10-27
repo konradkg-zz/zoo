@@ -9,7 +9,7 @@ import org.springframework.batch.item.file.transform.FieldSet;
 import org.springframework.validation.BindException;
 
 
-public class PexOnlineBO implements Serializable {
+public class PexOnline implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -224,11 +224,11 @@ public class PexOnlineBO implements Serializable {
 		this.creditorIcId = creditorIcId;
 	}
 	
-	public static class PexOnlineBOFieldSetMapper implements FieldSetMapper<PexOnlineBO> {
+	public static class PexOnlineFieldSetMapper implements FieldSetMapper<PexOnline> {
 
 		@Override
-		public PexOnlineBO mapFieldSet(FieldSet fieldSet) throws BindException {
-			PexOnlineBO r = new PexOnlineBO();
+		public PexOnline mapFieldSet(FieldSet fieldSet) throws BindException {
+			PexOnline r = new PexOnline();
 	    	int index = 0;
 	    	r.setPexId(fieldSet.readInt(index++));
 	    	r.setPexCaseRefNo(fieldSet.readString(index++));

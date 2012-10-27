@@ -13,14 +13,14 @@ import org.springframework.batch.item.file.transform.DefaultFieldSetFactory;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.core.io.FileSystemResource;
 
-import zoo.daroo.h2.mem.bo.PexOnlineBO;
+import zoo.daroo.h2.mem.bo.PexOnline;
 
 public class SpringBatchTry {
 
 	public static void main(String[] args) throws Exception {
 		long start = System.nanoTime();
 
-		FlatFileItemReader<PexOnlineBO> itemReader = new FlatFileItemReader<PexOnlineBO>();
+		FlatFileItemReader<PexOnline> itemReader = new FlatFileItemReader<PexOnline>();
 		itemReader.setEncoding("UTF-8");
 		itemReader.setSkippedLinesCallback(new LineCallbackHandler() {
 			@Override
@@ -31,7 +31,7 @@ public class SpringBatchTry {
 
 		itemReader.setResource(new FileSystemResource("p:/Temp/h2_data/dump_lite2.csv"));
 		// DelimitedLineTokenizer defaults to comma as its delimiter
-		DefaultLineMapper<PexOnlineBO> lineMapper = new DefaultLineMapper<PexOnlineBO>();
+		DefaultLineMapper<PexOnline> lineMapper = new DefaultLineMapper<PexOnline>();
 
 		DelimitedLineTokenizer tokenizer = new DelimitedLineTokenizer(';');
 		// tokenizer.setQuoteCharacter('^');
@@ -44,10 +44,10 @@ public class SpringBatchTry {
 
 		tokenizer.setFieldSetFactory(fieldSetFactory);
 		lineMapper.setLineTokenizer(tokenizer);
-		lineMapper.setFieldSetMapper(new PexOnlineBO.PexOnlineBOFieldSetMapper());
+		lineMapper.setFieldSetMapper(new PexOnline.PexOnlineFieldSetMapper());
 		itemReader.setLineMapper(lineMapper);
 		itemReader.open(new ExecutionContext());
-		PexOnlineBO player = null;
+		PexOnline player = null;
 		final int maxSkipCount = 300;
 		int skipCount = 0;
 
