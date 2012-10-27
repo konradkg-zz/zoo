@@ -53,12 +53,12 @@ public class JdbcConnectionPoolBean implements DataSource, InitializingBean, Dis
 
 	@Override
 	public <T> T unwrap(Class<T> iface) throws SQLException {
-		throw new RuntimeException("Not supported method");
+		throw new SQLFeatureNotSupportedException("Not supported method");
 	}
 
 	@Override
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
-		throw new RuntimeException("Not supported method");
+		throw new SQLFeatureNotSupportedException("Not supported method");
 	}
 
 	@Override
