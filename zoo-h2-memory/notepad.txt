@@ -1,5 +1,10 @@
 - full load time: Time: 900[s], 900763[ms] = 15min
 - CALL FTL_REINDEX(); -  39424 ms (wszelkie, lacznie ze zwylymi selectami sa zablokowane)
+- ALTER TABLE PEX RENAME TO PEX_TEMP; 0 ms
+- DROP TABLE PEX; 1 ms
+
+
+- FTS query: ok 43 ms
 - HEAP: 
-	- old gen: 1 812 247 kbytes
+	- old gen: 1 812 247 kbytes (empty, after drop: 293 060 kbytes)
 	

@@ -249,7 +249,8 @@ public class PexOnline implements Serializable {
 	    	r.setPexAmountTotal(fieldSet.readBigDecimal(index++));
 	    	r.setPexAmountOpen(fieldSet.readBigDecimal(index++));
 	    	r.setPexDateDue(fieldSet.readDate(index++));
-	    	r.setPexDateModified(fieldSet.readDate(index++));
+	    	//fix lack of time part in (2012-04-03 18:51:00.813)
+	    	r.setPexDateModified(fieldSet.readDate(index++, "yyyy-MM-dd HH:mm:ss.SSS"));
 	    	
 	    	r.setDebtorFirstName(fieldSet.readString(index++));
 	    	r.setDebtorName(fieldSet.readString(index++));
