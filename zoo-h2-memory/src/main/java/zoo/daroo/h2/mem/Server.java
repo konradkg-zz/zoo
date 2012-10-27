@@ -21,7 +21,7 @@ public class Server implements InitializingBean, DisposableBean {
 	public void afterPropertiesSet() throws Exception {
 		internalDbManager.initDatabase();
 		internalDbManager.createPexTempTable();
-		//fileLoader.load();
+		fileLoader.load();
 		
 		//rename pex_temp and create FTL index
 		internalDbManager.createFtlIndex();
@@ -32,7 +32,7 @@ public class Server implements InitializingBean, DisposableBean {
 			public void run() {
 				try {
 					internalDbManager.createPexTempTable();
-					//fileLoader.load();
+					fileLoader.load();
 					
 					internalDbManager.switchTables();
 					
