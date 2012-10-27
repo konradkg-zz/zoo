@@ -42,8 +42,11 @@ public class SpringBatchTry {
 		
 		DelimitedLineTokenizer tokenizer = new DelimitedLineTokenizer(';');
 		tokenizer.setQuoteCharacter('^');
-		DefaultFieldSetFactory fieldSetFactory = new DefaultFieldSetFactory(); 
-		fieldSetFactory.setNumberFormat(NumberFormat.getInstance());
+		DefaultFieldSetFactory fieldSetFactory = new DefaultFieldSetFactory();
+		
+		NumberFormat numberFormat = NumberFormat.getInstance();
+		//numberFormat.setGroupingUsed(false);
+		fieldSetFactory.setNumberFormat(numberFormat);
 		fieldSetFactory.setDateFormat(SimpleDateFormat.getDateInstance());
 		
 		tokenizer.setFieldSetFactory(fieldSetFactory);
@@ -283,8 +286,8 @@ public class SpringBatchTry {
 	    public Record mapFieldSet(FieldSet fieldSet) {
 	    	Record r = new Record();
 	    	int index = 0;
-	    	index++;
-	    	//r.setPexId(fieldSet.readInt(index++));
+	    	//index++;
+	    	r.setPexId(fieldSet.readInt(index++));
 	    	r.setPexCAseRefNo(fieldSet.readString(index++));
 	    	r.setPexCanPublishCreditorData(fieldSet.readBoolean(index++));
 	    	r.setPexEntitlementText(fieldSet.readString(index++));
