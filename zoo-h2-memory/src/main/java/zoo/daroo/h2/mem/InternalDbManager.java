@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,12 +31,12 @@ public class InternalDbManager {
 	
 	public void initDatabase() throws IOException, SQLException {
 		final String sql = readFile(initScriptLocation);
-		executeSql(sql);
+		executeSql(sql, "initDatabase");
 	}
 	
 	public void createFtlIndex() throws IOException, SQLException {
 		final String sql = readFile(createFtlIndexScriptLocation);
-		executeSql(sql);
+		executeSql(sql, "createFtlIndex");
 	}
 	
 	private String readFile(Resource resource) throws IOException {
@@ -54,7 +55,8 @@ public class InternalDbManager {
 		return str.toString();
 	}
 	
-	private void executeSql(String sql) throws SQLException {
+	private void executeSql(String sql, String description) throws SQLException {
+		final long start = System.nanoTime();
 		Connection con = null;
 		try {
 			con = dataSource.getConnection();
@@ -65,6 +67,10 @@ public class InternalDbManager {
 		} finally {
 			if(con != null) {
 				con.close();
+			}
+			if(description != null) {
+				Logger.info(description + " execution took " 
+					+ TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS));
 			}
 		}
 	}

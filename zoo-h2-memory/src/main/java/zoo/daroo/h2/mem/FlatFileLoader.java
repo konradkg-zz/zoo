@@ -59,6 +59,8 @@ public class FlatFileLoader {
 					
 					if(pex.getPexId() == null) {
 						Logger.warn("Skip due to lack of pexId");
+						skipCount++;
+						
 						continue;
 					}
 					pexOnlineDao.insert(pex);
@@ -80,7 +82,7 @@ public class FlatFileLoader {
 		}
 		Logger.info("Skip count: " + skipCount);
 		long stop = System.nanoTime();
-		Logger.info("Time: " + TimeUnit.SECONDS.convert(stop - start, TimeUnit.NANOSECONDS) + "[s], "
+		Logger.info("Load time: " + TimeUnit.SECONDS.convert(stop - start, TimeUnit.NANOSECONDS) + "[s], "
 				+ TimeUnit.MILLISECONDS.convert(stop - start, TimeUnit.NANOSECONDS) + "[ms].");
 
 	}
