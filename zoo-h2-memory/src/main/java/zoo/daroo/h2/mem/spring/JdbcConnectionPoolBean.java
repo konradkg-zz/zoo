@@ -73,6 +73,6 @@ public class JdbcConnectionPoolBean implements DataSource, InitializingBean, Dis
 
 	//JDK1.7
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-		throw new RuntimeException("Not supported method");
+		throw new SQLFeatureNotSupportedException("Not supported method");
 	}
 }
