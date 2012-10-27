@@ -1,3 +1,5 @@
+jdbc:h2:tcp://localhost/mem:pex_online
+
 - full load time: Time: 900[s], 900763[ms] = 15min
 - CALL FTL_REINDEX(); -  39424 ms (wszelkie, lacznie ze zwylymi selectami sa zablokowane)
 - ALTER TABLE PEX RENAME TO PEX_TEMP; 0 ms
@@ -22,3 +24,5 @@
 
 - 4GB + CMS: switch Load time: 185[s], 185653[ms]
 	-Xms4G -Xmx4G -XX:+UseConcMarkSweepGC -XX:+UseParNewGC
+- 3,5GB + CMS:  Load time: 173[s], 173133[ms]
+	-Xms3584m -Xmx3584m -XX:+UseConcMarkSweepGC -XX:+UseParNewGC
