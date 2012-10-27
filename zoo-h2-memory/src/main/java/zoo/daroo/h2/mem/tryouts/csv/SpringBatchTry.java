@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.LineCallbackHandler;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
@@ -33,7 +34,7 @@ public class SpringBatchTry {
 		DefaultLineMapper<PexOnlineBO> lineMapper = new DefaultLineMapper<PexOnlineBO>();
 		
 		DelimitedLineTokenizer tokenizer = new DelimitedLineTokenizer(';');
-		tokenizer.setQuoteCharacter('^');
+		//tokenizer.setQuoteCharacter('^');
 		DefaultFieldSetFactory fieldSetFactory = new DefaultFieldSetFactory();
 		
 		NumberFormat numberFormat = NumberFormat.getInstance();
@@ -47,12 +48,33 @@ public class SpringBatchTry {
 		itemReader.setLineMapper(lineMapper);
 		itemReader.open(new ExecutionContext());
 		PexOnlineBO player = null;
-		while((player = itemReader.read()) != null) {
-			player.toString();
+		final int maxSkipCount = 300;
+		int skipCount = 0;
+		
+		
+		
+		try {
+			for(;;) {
+				try {
+					player = itemReader.read();
+					if(player == null)
+					break;
+				} catch (Exception e) { 
+					if( e instanceof ParseException) {
+						System.err.println("Skipped due to: " + e.getMessage());
+						skipCount++;
+					} 
+					if(skipCount > maxSkipCount) {
+						System.err.println("Skip count: " + skipCount);
+						throw e;
+					}
+					//e.printStackTrace();
+				}
+			}
+		} finally {
+			itemReader.close();
 		}
-		
-		itemReader.close();
-		
+		System.out.println("Skip count: " + skipCount);
 		long stop = System.nanoTime();
 		System.out.println("Time: " + TimeUnit.SECONDS.convert(stop - start, TimeUnit.NANOSECONDS) + "[s], " 
 				+ TimeUnit.MILLISECONDS.convert(stop - start, TimeUnit.NANOSECONDS) + "[ms]." );
