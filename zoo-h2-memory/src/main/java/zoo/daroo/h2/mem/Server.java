@@ -19,9 +19,32 @@ public class Server implements InitializingBean, DisposableBean {
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		internalDbManager.initDatabase();	
-		fileLoader.load();
+		internalDbManager.initDatabase();
+		internalDbManager.createPexTempTable();
+		//fileLoader.load();
+		
+		//rename pex_temp and create FTL index
 		internalDbManager.createFtlIndex();
+		//DONE
+		
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					internalDbManager.createPexTempTable();
+					//fileLoader.load();
+					
+					internalDbManager.switchTables();
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+			}
+		}).start();
+		
+		
+		
 	}
 	
 	@Override

@@ -40,7 +40,7 @@
 	</sql>
 	
 	<insert id="insert" parameterType="PexOnline" useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO PEX
+		INSERT INTO PEX_TEMP
 		(<include refid="insertColumns" />)
 		VALUES (
 		#{pexId},
