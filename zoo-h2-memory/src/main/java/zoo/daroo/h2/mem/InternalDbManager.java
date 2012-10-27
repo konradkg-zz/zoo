@@ -70,7 +70,7 @@ public class InternalDbManager {
 			}
 			if(description != null) {
 				Logger.info(description + " execution took " 
-					+ TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS));
+					+ TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS) + " [ms]");
 			}
 		}
 	}
