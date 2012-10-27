@@ -15,14 +15,16 @@
 		<property name="initScriptLocation" value="classpath:META-INF/sql/init.sql"/>
 	</bean>
 	
+	<bean id="FlatFileLoader" class="zoo.daroo.h2.mem.FlatFileLoader"/>
+	
 	<bean id="pexOnlineSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="JdbcConnectionPoolBean" />
-        <property name="typeAliasesPackage" value="zoo.daroo.h2.mem.dao" />
+        <property name="typeAliasesPackage" value="zoo.daroo.h2.mem.bo" />
         <property name="configLocation" value="classpath:META-INF/mybatis/pex-online-configuration.xml"/>
     </bean>
 
     <bean id="pexOnlineMapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="zoo.daroo.h2.mem.bo" />
+        <property name="basePackage" value="zoo.daroo.h2.mem.dao" />
         <property name="sqlSessionFactoryBeanName" value="pexOnlineSqlSessionFactory"/>
     </bean>
 	

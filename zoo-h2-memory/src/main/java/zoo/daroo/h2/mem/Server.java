@@ -12,10 +12,15 @@ public class Server implements InitializingBean, DisposableBean {
 	@Named(InternalDbManager.BEAN_ID)
 	private InternalDbManager internalDbManager;
 	
+	@Inject
+	@Named(FlatFileLoader.BEAN_ID)
+	private FlatFileLoader fileLoader;
+	
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		internalDbManager.initDatabase();		
+		internalDbManager.initDatabase();	
+		fileLoader.load();
 	}
 	
 	@Override
