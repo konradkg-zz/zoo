@@ -1,24 +1,58 @@
-CREATE TABLE data (key VARCHAR(255) PRIMARY KEY, value VARCHAR(1023) );
 
 CREATE ALIAS IF NOT EXISTS FTL_INIT FOR "org.h2.fulltext.FullTextLucene.init";
 CALL FTL_INIT();
 
 
-CREATE TABLE TEST(ID INT PRIMARY KEY, NAME VARCHAR);
-CALL FTL_CREATE_INDEX('PUBLIC', 'TEST', NULL);
+CREATE TABLE PEX(
+	id IDENTITY PRIMARY KEY, 
+	pex_id INT, 
+	pex_case_ref_no NVARCHAR(255), 
+	pex_can_publish_creditor_data BOOLEAN, 
+	pex_entitlement_text NVARCHAR(255), 
+	pex_entitlement_document_ref_no NVARCHAR(255), 
+	pex_icur_id INT, 
+	pex_amount_total DECIMAL(20, 2), 
+	pex_amount_open DECIMAL(20, 2), 
+	pex_date_due DATE, 
+	pex_date_modified DATETIME,
 
-INSERT INTO TEST VALUES(1, 'Hello World');
-INSERT INTO TEST VALUES(2, 'Hello World1');
-INSERT INTO TEST VALUES(3, 'Dupa');
+	debtor_first_name NVARCHAR(255), 
+	debtor_name NVARCHAR(255), 
+	debtor_nip NVARCHAR(255), 
+	debtor_pesel NVARCHAR(255), 
+	debtor_regon NVARCHAR(255), 
+	debtor_street NVARCHAR(255), 
+	debtor_house_number NVARCHAR(255), 
+	debtor_flat_number NVARCHAR(255), 
+	debtor_zip NVARCHAR(255), 
+	debtor_ic_id INT,
+
+	creditor_first_name NVARCHAR(255), 
+	creditor_name NVARCHAR(255), 
+	creditor_nip NVARCHAR(255), 
+	creditor_pesel NVARCHAR(255), 
+	creditor_regon NVARCHAR(255), 
+	creditor_street NVARCHAR(255), 
+	creditor_house_number NVARCHAR(255), 
+	creditor_flat_number NVARCHAR(255), 
+	creditor_zip NVARCHAR(255), 
+	creditor_ic_id INT
+);
+
+CALL FTL_CREATE_INDEX('PUBLIC', 'PEX', 'DEBTOR_FIRST_NAME,DEBTOR_NAME,DEBTOR_STREET');
 
 
-CREATE TABLE TEST_TEMP(ID INT PRIMARY KEY, NAME VARCHAR);
+
+
+
+--INSERT INTO TEST VALUES(1, 'Hello World');
+--INSERT INTO TEST VALUES(2, 'Hello World1');
+--INSERT INTO TEST VALUES(3, 'Dupa');
+
+
+--CREATE TABLE TEST_TEMP(ID INT PRIMARY KEY, NAME VARCHAR);
 --CALL FTL_CREATE_INDEX('PUBLIC', 'TEST_TEMP', NULL);
 
-INSERT INTO TEST_TEMP VALUES(1, 'Hello World');
-INSERT INTO TEST_TEMP VALUES(2, 'Hello World1');
-INSERT INTO TEST_TEMP VALUES(3, 'Dupa');
-INSERT INTO TEST_TEMP VALUES(4, 'Hello World1');
 
 --DROP TABLE TEST;
 --ALTER TABLE TEST_TEMP RENAME TO TEST;

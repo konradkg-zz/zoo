@@ -34,11 +34,12 @@ public class InternalDbManager {
 	
 	private String readFile(Resource resource) throws IOException {
 		final InputStream is = new BufferedInputStream(resource.getInputStream());
-		final byte[] buffer = new byte[1024];
+		byte[] buffer = new byte[1024];
 		final StringBuilder str = new StringBuilder();
 		try {
 			while(is.read(buffer) != -1) {
 				str.append(new String(buffer, "UTF-8"));
+				buffer = new byte[1024];
 			}
 		} finally {
 			is.close();
