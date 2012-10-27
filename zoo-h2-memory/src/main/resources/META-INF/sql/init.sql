@@ -28,3 +28,4 @@ INSERT INTO TEST_TEMP VALUES(4, 'Hello World1');
 --FTL_SEARCH(queryString, limitInt, offsetInt): result set
 --FTL_REINDEX()
 --FTL_DROP_ALL()
+--
