@@ -19,7 +19,7 @@ public class SpringBatchTry {
 
 	public static void main(String[] args) throws Exception {
 		long start = System.nanoTime();
-		
+
 		FlatFileItemReader<PexOnlineBO> itemReader = new FlatFileItemReader<PexOnlineBO>();
 		itemReader.setEncoding("UTF-8");
 		itemReader.setSkippedLinesCallback(new LineCallbackHandler() {
@@ -28,20 +28,20 @@ public class SpringBatchTry {
 				line.toString();
 			}
 		});
-		
+
 		itemReader.setResource(new FileSystemResource("p:/Temp/h2_data/dump_lite2.csv"));
 		// DelimitedLineTokenizer defaults to comma as its delimiter
 		DefaultLineMapper<PexOnlineBO> lineMapper = new DefaultLineMapper<PexOnlineBO>();
-		
+
 		DelimitedLineTokenizer tokenizer = new DelimitedLineTokenizer(';');
-		//tokenizer.setQuoteCharacter('^');
+		// tokenizer.setQuoteCharacter('^');
 		DefaultFieldSetFactory fieldSetFactory = new DefaultFieldSetFactory();
-		
+
 		NumberFormat numberFormat = NumberFormat.getInstance();
-		//numberFormat.setGroupingUsed(false);
+		// numberFormat.setGroupingUsed(false);
 		fieldSetFactory.setNumberFormat(numberFormat);
 		fieldSetFactory.setDateFormat(SimpleDateFormat.getDateInstance());
-		
+
 		tokenizer.setFieldSetFactory(fieldSetFactory);
 		lineMapper.setLineTokenizer(tokenizer);
 		lineMapper.setFieldSetMapper(new PexOnlineBO.PexOnlineBOFieldSetMapper());
@@ -50,25 +50,23 @@ public class SpringBatchTry {
 		PexOnlineBO player = null;
 		final int maxSkipCount = 300;
 		int skipCount = 0;
-		
-		
-		
+
 		try {
-			for(;;) {
+			for (;;) {
 				try {
 					player = itemReader.read();
-					if(player == null)
-					break;
-				} catch (Exception e) { 
-					if( e instanceof ParseException) {
+					if (player == null)
+						break;
+				} catch (Exception e) {
+					if (e instanceof ParseException) {
 						System.err.println("Skipped due to: " + e.getMessage());
 						skipCount++;
-					} 
-					if(skipCount > maxSkipCount) {
+					}
+					if (skipCount > maxSkipCount) {
 						System.err.println("Skip count: " + skipCount);
 						throw e;
 					}
-					//e.printStackTrace();
+					// e.printStackTrace();
 				}
 			}
 		} finally {
@@ -76,9 +74,9 @@ public class SpringBatchTry {
 		}
 		System.out.println("Skip count: " + skipCount);
 		long stop = System.nanoTime();
-		System.out.println("Time: " + TimeUnit.SECONDS.convert(stop - start, TimeUnit.NANOSECONDS) + "[s], " 
-				+ TimeUnit.MILLISECONDS.convert(stop - start, TimeUnit.NANOSECONDS) + "[ms]." );
-		
+		System.out.println("Time: " + TimeUnit.SECONDS.convert(stop - start, TimeUnit.NANOSECONDS) + "[s], "
+				+ TimeUnit.MILLISECONDS.convert(stop - start, TimeUnit.NANOSECONDS) + "[ms].");
+
 	}
-	
+
 }
