@@ -4,7 +4,7 @@
 - DROP TABLE PEX; 1 ms
 
 
-- FTS query: ok 43 ms
+- FTS query: ok 43 - 420 ms
 - HEAP: 
 	- old gen: 1 812 247 kbytes (empty, after drop: 293 060 kbytes)
 

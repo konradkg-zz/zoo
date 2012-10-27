@@ -13,6 +13,7 @@
 	
 	<bean id="InternalDbManager" class="zoo.daroo.h2.mem.InternalDbManager">
 		<property name="initScriptLocation" value="classpath:META-INF/sql/init.sql"/>
+		<property name="createFtlIndexScriptLocation" value="classpath:META-INF/sql/create_ftl_index.sql"/>
 	</bean>
 	
 	<bean id="FlatFileLoader" class="zoo.daroo.h2.mem.FlatFileLoader"/>

@@ -25,10 +25,16 @@ public class InternalDbManager {
 	private DataSource dataSource;
 	
 	private Resource initScriptLocation;
+	private Resource createFtlIndexScriptLocation;
 
 	
 	public void initDatabase() throws IOException, SQLException {
 		final String sql = readFile(initScriptLocation);
+		executeSql(sql);
+	}
+	
+	public void createFtlIndex() throws IOException, SQLException {
+		final String sql = readFile(createFtlIndexScriptLocation);
 		executeSql(sql);
 	}
 	
@@ -67,4 +73,9 @@ public class InternalDbManager {
 	public void setInitScriptLocation(Resource initScriptLocation) {
 		this.initScriptLocation = initScriptLocation;
 	}
+	public void setCreateFtlIndexScriptLocation(Resource createFtlIndexScriptLocation) {
+		this.createFtlIndexScriptLocation = createFtlIndexScriptLocation;
+	}
+	
+	
 }

@@ -21,6 +21,7 @@ public class Server implements InitializingBean, DisposableBean {
 	public void afterPropertiesSet() throws Exception {
 		internalDbManager.initDatabase();	
 		fileLoader.load();
+		internalDbManager.createFtlIndex();
 	}
 	
 	@Override
