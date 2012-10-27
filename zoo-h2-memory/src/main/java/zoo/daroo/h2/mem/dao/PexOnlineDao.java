@@ -11,7 +11,7 @@ public interface PexOnlineDao {
 	
 	public final static String BEAN_ID = "PexOnlineDao";
 
-	public void insert(PexOnline bo);
+	public void insert(PexOnline pex);
 	
 
 }

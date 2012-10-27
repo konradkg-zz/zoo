@@ -13,6 +13,7 @@ public class PexOnline implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private long id;
 	private Integer pexId;
 	private String pexCaseRefNo;
 	private Boolean pexCanPublishCreditorData;
@@ -43,6 +44,15 @@ public class PexOnline implements Serializable {
 	private String creditorFlatNo;
 	private String creditorZip;
 	private Integer creditorIcId;
+	
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+	//---------------------
 	public Integer getPexId() {
 		return pexId;
 	}

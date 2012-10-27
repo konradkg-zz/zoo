@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="zoo.daroo.h2.mem.dao.PexOnlineDao">
+
+	<sql id="insertColumns">
+		PEX_ID, 
+	PEX_CASE_REF_NO, 
+	PEX_CAN_PUBLISH_CREDITOR_DATA, 
+	PEX_ENTITLEMENT_TEXT, 
+	PEX_ENTITLEMENT_DOCUMENT_REF_NO, 
+	PEX_ICUR_ID, 
+	PEX_AMOUNT_TOTAL, 
+	PEX_AMOUNT_OPEN, 
+	PEX_DATE_DUE, 
+	PEX_DATE_MODIFIED,
+
+	DEBTOR_FIRST_NAME, 
+	DEBTOR_NAME, 
+	DEBTOR_NIP, 
+	DEBTOR_PESEL, 
+	DEBTOR_REGON, 
+	DEBTOR_STREET, 
+	DEBTOR_HOUSE_NUMBER, 
+	DEBTOR_FLAT_NUMBER, 
+	DEBTOR_ZIP, 
+	DEBTOR_IC_ID,
+
+	CREDITOR_FIRST_NAME, 
+	CREDITOR_NAME, 
+	CREDITOR_NIP, 
+	CREDITOR_PESEL, 
+	CREDITOR_REGON, 
+	CREDITOR_STREET, 
+	CREDITOR_HOUSE_NUMBER, 
+	CREDITOR_FLAT_NUMBER, 
+	CREDITOR_ZIP, 
+	CREDITOR_IC_ID
+	</sql>
+	
+	<insert id="insert" parameterType="PexOnline" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO PEX
+		(<include refid="insertColumns" />)
+		VALUES (
+		#{pexId},
+		#{pexCaseRefNo},
+		#{pexCanPublishCreditorData},
+		#{pexEntitlementText},
+		#{pexEntitlementRefNo},
+		#{pexIcurId},
+		#{pexAmountTotal},
+		#{pexAmountOpen},
+		#{pexDateDue},
+		#{pexDateModified},
+		#{debtorFirstName},
+		#{debtorName},
+		#{debtorNip},
+		#{debtorPesel},
+		#{debtorRegon},
+		#{debtorStreet},
+		#{debtorHouseNo},
+		#{debtorFlatNo},
+		#{debtorZip},
+		#{debtorIcId},
+		#{creditorFirstName},
+		#{creditorName},
+		#{creditorNip},
+		#{creditorPesel},
+		#{creditorRegon},
+		#{creditorStreet},
+		#{creditorHouseNo},
+		#{creditorFlatNo},
+		#{creditorZip},
+		#{creditorIcId}
+		);
+	</insert>
+</mapper>
