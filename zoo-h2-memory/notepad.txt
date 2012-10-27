@@ -1,0 +1,5 @@
+- full load time: Time: 900[s], 900763[ms] = 15min
+- CALL FTL_REINDEX(); -  39424 ms (wszelkie, lacznie ze zwylymi selectami sa zablokowane)
+- HEAP: 
+	- old gen: 1 812 247 kbytes
+	
