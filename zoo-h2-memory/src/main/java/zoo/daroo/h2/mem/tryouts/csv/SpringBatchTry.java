@@ -2,7 +2,6 @@ package zoo.daroo.h2.mem.tryouts.csv;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.batch.item.ExecutionContext;
@@ -18,9 +17,6 @@ import zoo.daroo.h2.mem.bo.PexOnlineBO;
 public class SpringBatchTry {
 
 	public static void main(String[] args) throws Exception {
-		NumberFormat nf = NumberFormat.getInstance(Locale.US);
-		nf.parse("-10999753");
-		
 		long start = System.nanoTime();
 		
 		FlatFileItemReader<PexOnlineBO> itemReader = new FlatFileItemReader<PexOnlineBO>();
