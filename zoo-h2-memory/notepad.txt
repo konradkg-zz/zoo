@@ -7,4 +7,10 @@
 - FTS query: ok 43 ms
 - HEAP: 
 	- old gen: 1 812 247 kbytes (empty, after drop: 293 060 kbytes)
+
 	
+- full load bez FTL:  Time: 147[s], 147705[ms] = 2,5 min
+	- HEAP: old gen: 1 384 393 kbytes
+
+	
+- CALL FTL_CREATE_INDEX('PUBLIC', 'PEX', 'DEBTOR_FIRST_NAME,DEBTOR_NAME,DEBTOR_STREET'); 36166 ms
