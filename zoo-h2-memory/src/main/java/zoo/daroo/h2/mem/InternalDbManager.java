@@ -73,7 +73,6 @@ public class InternalDbManager {
 					+ TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS) + " [ms]");
 			}
 		}
-		
 	}
 	
 	
