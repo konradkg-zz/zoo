@@ -15,3 +15,10 @@
 	
 - CALL FTL_CREATE_INDEX('PUBLIC', 'PEX', 'DEBTOR_FIRST_NAME,DEBTOR_NAME,DEBTOR_STREET'); 36166 ms
 	- old gen: 1 723 880 kbytes
+	
+	
+- 3GB: switch 28min i sie nie skonczyl (840952 recordow done)
+- 4GB: switch Load time: 321[s], 321452[ms]
+
+- 4GB + CMS: switch Load time: 185[s], 185653[ms]
+	-Xms4G -Xmx4G -XX:+UseConcMarkSweepGC -XX:+UseParNewGC

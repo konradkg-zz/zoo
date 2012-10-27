@@ -3,6 +3,8 @@ package zoo.daroo.h2.mem.spring;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -69,4 +71,8 @@ public class JdbcConnectionPoolBean implements DataSource, InitializingBean, Dis
 		return jdbcConnectionPool.getConnection(username, password);
 	}
 
+	//JDK1.7
+	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		throw new RuntimeException("Not supported method");
+	}
 }
