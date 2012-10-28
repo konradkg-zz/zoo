@@ -1,5 +1,11 @@
 package zoo.daroo.h2.mem;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -17,6 +23,20 @@ import org.springframework.core.io.FileSystemResource;
 import zoo.daroo.h2.mem.bo.PexOnline;
 import zoo.daroo.h2.mem.dao.PexOnlineDao;
 
+
+/*
+ * TODO: 
+ * 1) rename to FlatFilemanager
+ * 2) Switch alg:
+ * 	a) check if new file is ready
+ * 	b) wait random() number of seconds 0 - 300
+ *  c) get file modified date and fileSize and store in DB
+ *  	(Files.readAttributes(path, BasicFileAttributes.class); attr.lastAccessTime())
+ *  d) copy file to local drive (Files.copy(Path source, Path target, CopyOption... options)) - overwrite
+ *  e) load file
+ * 3) if connection lost to remote file compare timestamp stored in DB and file size
+ * 
+ */
 public class FlatFileLoader {
 	
 	public final static String BEAN_ID = "FlatFileLoader";
@@ -33,7 +53,10 @@ public class FlatFileLoader {
 
 		FlatFileItemReader<PexOnline> itemReader = new FlatFileItemReader<PexOnline>();
 		itemReader.setEncoding("UTF-8");
-		itemReader.setResource(new FileSystemResource("p:/Temp/h2_data/dump_lite2.csv"));
+		
+		final FileSystemResource resource = new FileSystemResource("p:/Temp/h2_data/dump_lite2.csv");
+		logFileAttributes(resource);
+		itemReader.setResource(resource);
 		
 		DefaultLineMapper<PexOnline> lineMapper = new DefaultLineMapper<PexOnline>();
 		lineMapper.setLineTokenizer(new DelimitedLineTokenizer(';'));
@@ -84,7 +107,20 @@ public class FlatFileLoader {
 		long stop = System.nanoTime();
 		Logger.info("Load time: " + TimeUnit.SECONDS.convert(stop - start, TimeUnit.NANOSECONDS) + "[s], "
 				+ TimeUnit.MILLISECONDS.convert(stop - start, TimeUnit.NANOSECONDS) + "[ms].");
-
 	}
 
+	private BasicFileAttributes logFileAttributes(FileSystemResource resource) {
+		BasicFileAttributes attr = null;
+		try {
+			final Path path = Paths.get(resource.getURI()).toAbsolutePath();
+			attr = Files.readAttributes(path, BasicFileAttributes.class);
+			final FileTime lastModifiedTime = attr.lastModifiedTime();
+			Logger.info("File path=" + path + ", last modified time=" + lastModifiedTime + " (milis=" + lastModifiedTime.toMillis() + ")" 
+					+ ", size=" + attr.size());
+			return attr;
+		} catch (IOException e) {
+			Logger.error("Cannot obtain file attributes", e);
+		}
+		return null;
+	}
 }
