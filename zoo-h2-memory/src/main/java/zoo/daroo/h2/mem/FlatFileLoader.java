@@ -61,12 +61,15 @@ public class FlatFileLoader implements FileChangeEventListener, DisposableBean {
 			this.workDir = Files.createDirectory(workDirPath);
 		}
 
+		Path localFile = null;
 		try {
 			// TODO: cfg
-			final Path localFile = FileUtils.copy(Paths.get("//htpc/Share/h2/dump_lite2.csv"), workDir);
-			loadFile(localFile.toFile());
+			localFile = FileUtils.copy(Paths.get("//htpc/Share/h2/dump_lite2.csv"), workDir);
 		} catch (NoSuchFileException e) {
 			Logger.warn(e);
+		}
+		if (localFile != null) {
+			loadFile(localFile.toFile());
 		}
 
 		watchDog = new FlatFileWatchDog(Paths.get("//htpc/Share/h2/dump_lite2.csv"), this);
@@ -164,6 +167,20 @@ public class FlatFileLoader implements FileChangeEventListener, DisposableBean {
 	@Override
 	public void onModify(Path path) {
 		Logger.info("File new or modified " + path);
+		Path localFile = null;
+		try {
+			localFile = FileUtils.tryCopy(path, workDir, 10);
+		} catch (IOException e) {
+			Logger.error("Cannot copy file.", e);
+		}
+
+		if (localFile != null) {
+			try {
+				loadFile(localFile.toFile());
+			} catch (Exception e) {
+				Logger.error("Cannot load local file.", e);
+			}
+		}
 
 	}
 }

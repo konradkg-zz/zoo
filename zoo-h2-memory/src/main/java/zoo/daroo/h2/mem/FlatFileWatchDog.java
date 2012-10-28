@@ -80,8 +80,6 @@ public class FlatFileWatchDog {
 					if (currentFileAttributes != null && lastFileAttributes == null) {
 						//new file
 						newOrChanged = true;
-						lastFileAttributes = currentFileAttributes;
-						eventListener.onModify(file);
 					} else if (currentFileAttributes != null && lastFileAttributes != null) {
 						if(currentFileAttributes.size() != lastFileAttributes.size() || 
 								currentFileAttributes.lastModifiedTime().equals(lastFileAttributes.lastModifiedTime()) == false) {
