@@ -66,7 +66,8 @@ public class FlatFileLoader implements EventsListener, DisposableBean {
 		loadFile(localFile.toFile());
 
 		
-		watchDog = new FlatFileWatchDog(this, Paths.get("//htpc/Share/h2/"));
+		//watchDog = new FlatFileWatchDog(this, Paths.get("//htpc/Share/h2/"));
+		//watchDog = new FlatFileWatchDog(this, Paths.get("y:/h2"));
 		//watchDog = new FlatFileWatchDog(this, Paths.get("p:/Temp/h2_data"));
 		
 	}
