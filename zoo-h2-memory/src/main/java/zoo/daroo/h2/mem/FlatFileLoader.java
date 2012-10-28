@@ -115,7 +115,7 @@ public class FlatFileLoader {
 			final Path path = Paths.get(resource.getURI()).toAbsolutePath();
 			attr = Files.readAttributes(path, BasicFileAttributes.class);
 			final FileTime lastModifiedTime = attr.lastModifiedTime();
-			Logger.info("File path=" + path + ", last modified time=" + lastModifiedTime + " (milis=" + lastModifiedTime.toMillis() + ")" 
+			Logger.info("File path=" + path + ", last modified time=" + lastModifiedTime + " (millis=" + lastModifiedTime.toMillis() + ")" 
 					+ ", size=" + attr.size());
 			return attr;
 		} catch (IOException e) {
