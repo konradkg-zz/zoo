@@ -17,8 +17,14 @@ public abstract class FileUtils {
 	private final static Log Logger = LogFactory.getLog(FileUtils.class);
 
 	public static Path copy(Path from, Path toDir) throws IOException {
+		Logger.info("Copying file " + from + " to " + toDir);
+		
+		final long start = System.nanoTime();
 		final Path to = toDir.resolve(from.getFileName());
-		return Files.copy(from, to, REPLACE_EXISTING, COPY_ATTRIBUTES);
+		final Path resultFile = Files.copy(from, to, REPLACE_EXISTING, COPY_ATTRIBUTES);
+		Logger.info("File " + from + " copied in " + TimeUnit.MILLISECONDS.convert(
+				System.nanoTime() - start, TimeUnit.NANOSECONDS) + " [ms]");
+		return resultFile;
 	}
 
 	public static Path tryCopy(Path from, Path toDir, int tryAttempts) throws IOException {

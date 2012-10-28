@@ -1,9 +1,12 @@
 package zoo.daroo.h2.mem;
 
 import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.file.FileSystemException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -89,8 +92,17 @@ public class FlatFileWatchDog {
 					}
 					
 					if(newOrChanged) {
-						lastFileAttributes = currentFileAttributes;
-						eventListener.onModify(file);
+						
+						try(FileChannel channel = FileChannel.open(file, StandardOpenOption.READ);
+							FileLock lock = channel.tryLock(0L , Long.MAX_VALUE, true)) {
+							if(lock != null) {
+								lastFileAttributes = currentFileAttributes;
+								eventListener.onModify(file);
+							}
+						} catch (IOException e) {
+							if(logger.isTraceEnabled())
+								logger.trace(e.getMessage());
+						}
 					}
 					
 					TimeUnit.MILLISECONDS.sleep(1000);
