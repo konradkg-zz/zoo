@@ -155,7 +155,7 @@ public class FlatFileWatchDog {
 							controller.getListener().onDelete(filename);
 						}
 						if (event.kind() == ENTRY_MODIFY) {
-							controller.getListener().onCreate(filename);
+							controller.getListener().onModify(filename);
 						}
 					}
 					boolean valid = watchKey.reset();
@@ -173,9 +173,9 @@ public class FlatFileWatchDog {
 		}
 	}
 
-	public interface EventsListener {
+	public static interface EventsListener {
 		public void onInit(Path path);
-		public void onCreate(Path path);
+		public void onModify(Path path);
 		public void onDelete(Path path);
 	}
 }

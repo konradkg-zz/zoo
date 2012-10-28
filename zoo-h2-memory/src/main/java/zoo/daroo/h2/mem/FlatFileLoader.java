@@ -1,8 +1,5 @@
 package zoo.daroo.h2.mem;
 
-import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,8 +18,10 @@ import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.FileSystemResource;
 
+import zoo.daroo.h2.mem.FlatFileWatchDog.EventsListener;
 import zoo.daroo.h2.mem.bo.PexOnline;
 import zoo.daroo.h2.mem.dao.PexOnlineDao;
 
@@ -40,7 +39,7 @@ import zoo.daroo.h2.mem.dao.PexOnlineDao;
  * 3) if connection lost to remote file compare timestamp stored in DB and file size
  * 
  */
-public class FlatFileLoader {
+public class FlatFileLoader implements DisposableBean {
 	
 	public final static String BEAN_ID = "FlatFileLoader";
 	
@@ -50,6 +49,16 @@ public class FlatFileLoader {
 	@Named(PexOnlineDao.BEAN_ID)
 	private PexOnlineDao pexOnlineDao;
 	
+	private final FlatFileWatchDog watchDog = new FlatFileWatchDog();
+	
+	public void init() throws IOException {
+		watchDog.init(Paths.get("p:/Temp/h2_data/dump_lite2.csv"), new SourceFlatFileEventListerner());
+	}
+	
+	@Override
+	public void destroy() throws Exception {
+		watchDog.stop();
+	}
 	
 	public void load() throws Exception{
 		long start = System.nanoTime();
@@ -127,8 +136,27 @@ public class FlatFileLoader {
 		return null;
 	}
 	
-	private Path copy(Path from, Path toDir) throws IOException {
-		final Path to = toDir.resolve(from.getFileName());
-		return Files.copy(from, to, REPLACE_EXISTING, COPY_ATTRIBUTES);
+
+	private class SourceFlatFileEventListerner implements EventsListener {
+
+		@Override
+		public void onInit(Path path) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onModify(Path path) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onDelete(Path path) {
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
+	
 }
