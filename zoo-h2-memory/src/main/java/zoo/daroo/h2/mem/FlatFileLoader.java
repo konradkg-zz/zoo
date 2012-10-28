@@ -49,6 +49,10 @@ public class FlatFileLoader implements FileChangeEventListener, DisposableBean {
 	@Inject
 	@Named(PexOnlineDao.BEAN_ID)
 	private PexOnlineDao pexOnlineDao;
+	
+	@Inject
+	@Named(InternalDbManager.BEAN_ID)
+	private InternalDbManager internalDbManager;
 
 	private FlatFileWatchDog watchDog;
 	private Path workDir;
@@ -174,11 +178,16 @@ public class FlatFileLoader implements FileChangeEventListener, DisposableBean {
 			Logger.error("Cannot copy file.", e);
 		}
 
+		
 		if (localFile != null) {
 			try {
+				internalDbManager.createPexTempTable();
 				loadFile(localFile.toFile());
+				internalDbManager.switchTables();
 			} catch (Exception e) {
-				Logger.error("Cannot load local file.", e);
+				Logger.error("Cannot referesh data from local file.", e);
+				
+				//TODO: drop pex_temp if exists
 			}
 		}
 

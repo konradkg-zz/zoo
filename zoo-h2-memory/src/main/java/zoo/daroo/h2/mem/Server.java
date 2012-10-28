@@ -22,41 +22,14 @@ public class Server implements InitializingBean, DisposableBean {
 		internalDbManager.initDatabase();
 		internalDbManager.createPexTempTable();
 		fileLoader.init();
-		
-		//fileLoader.load();
-		
 		//rename pex_temp and create FTL index
 		internalDbManager.createFtlIndex();
+		
 		fileLoader.startWatch();
-		
-		//DONE
-		
-//		new Thread(new Runnable() {
-//			@Override
-//			public void run() {
-//				try {
-//					internalDbManager.createPexTempTable();
-//					//fileLoader.load();
-//					
-//					internalDbManager.switchTables();
-//					
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//					//if failed DROP PEX_TEMP
-//				}
-//				
-//			}
-//		}).start();
-		
-		
-		
 	}
 	
 	@Override
 	public void destroy() throws Exception {
-		// TODO Auto-generated method stub
-		
 	}
-
 	
 }
