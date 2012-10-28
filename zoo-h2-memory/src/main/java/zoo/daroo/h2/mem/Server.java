@@ -38,6 +38,7 @@ public class Server implements InitializingBean, DisposableBean {
 					
 				} catch (Exception e) {
 					e.printStackTrace();
+					//if failed DROP PEX_TEMP
 				}
 				
 			}
