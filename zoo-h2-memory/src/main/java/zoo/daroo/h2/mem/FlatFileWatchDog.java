@@ -5,6 +5,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 import java.io.IOException;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
@@ -15,6 +16,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+/*
+ * doesn't work with windows shared folders  
+ */
+
 
 public class FlatFileWatchDog {
 
@@ -30,7 +36,11 @@ public class FlatFileWatchDog {
 	
 	public FlatFileWatchDog(EventsListener eventsListener, Path baseDir) {
 		this.eventsListener = eventsListener;
-		this.baseDir = baseDir;
+		try {
+			this.baseDir = baseDir.toRealPath(LinkOption.NOFOLLOW_LINKS);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public void start() throws IOException {
@@ -80,6 +90,7 @@ public class FlatFileWatchDog {
 		while (started.get()) {
 			WatchService newWatchService = null;
 			try {
+				//baseDir.
 				newWatchService = baseDir.getFileSystem().newWatchService();
 				baseDir.register(newWatchService, ENTRY_DELETE, ENTRY_MODIFY);
 				return newWatchService;

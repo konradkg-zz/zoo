@@ -63,15 +63,17 @@ public class FlatFileLoader implements EventsListener, DisposableBean {
 		//TODO: cfg
 		final Path localFile = FileUtils.copy(Paths.get("//htpc/Share/h2/dump_lite2.csv"), workDir);
 		
-		try {
-			loadFile(localFile.toFile());
-		} finally {
-			if(localFile != null && Files.exists(localFile)) {
-				Files.delete(localFile);
-			}
-		}
+//		try {
+		loadFile(localFile.toFile());
+//		} finally {
+//			if(localFile != null && Files.exists(localFile)) {
+//				Files.delete(localFile);
+//			}
+//		}
 		
 		watchDog = new FlatFileWatchDog(this, Paths.get("//htpc/Share/h2/"));
+		//watchDog = new FlatFileWatchDog(this, Paths.get("p:/Temp/h2_data"));
+		
 	}
 
 	public void startWatch() throws IOException {
