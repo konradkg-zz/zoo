@@ -3,6 +3,7 @@ package zoo.daroo.h2.mem;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -22,7 +23,7 @@ import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.FileSystemResource;
 
-import zoo.daroo.h2.mem.FlatFileWatchDog.EventsListener;
+import zoo.daroo.h2.mem.FlatFileWatchDogNew.FileChangeEventListener;
 import zoo.daroo.h2.mem.bo.PexOnline;
 import zoo.daroo.h2.mem.dao.PexOnlineDao;
 
@@ -39,7 +40,7 @@ import zoo.daroo.h2.mem.dao.PexOnlineDao;
  * 3) if connection lost to remote file compare timestamp stored in DB and file size
  * 
  */
-public class FlatFileLoader implements EventsListener, DisposableBean {
+public class FlatFileLoader implements FileChangeEventListener, DisposableBean {
 
 	public final static String BEAN_ID = "FlatFileLoader";
 
@@ -49,27 +50,26 @@ public class FlatFileLoader implements EventsListener, DisposableBean {
 	@Named(PexOnlineDao.BEAN_ID)
 	private PexOnlineDao pexOnlineDao;
 
-	private FlatFileWatchDog watchDog;
+	private FlatFileWatchDogNew watchDog;
 	private Path workDir;
 
 	public void init() throws Exception {
 		final Path workDirPath = Paths.get(".", "work").toAbsolutePath();
-		if(Files.exists(workDirPath)) {
+		if (Files.exists(workDirPath)) {
 			this.workDir = workDirPath;
 		} else {
 			this.workDir = Files.createDirectory(workDirPath);
 		}
-		
-		//TODO: cfg
-		final Path localFile = FileUtils.copy(Paths.get("//htpc/Share/h2/dump_lite2.csv"), workDir);
-		
-		loadFile(localFile.toFile());
 
-		
-		//watchDog = new FlatFileWatchDog(this, Paths.get("//htpc/Share/h2/"));
-		//watchDog = new FlatFileWatchDog(this, Paths.get("y:/h2"));
-		//watchDog = new FlatFileWatchDog(this, Paths.get("p:/Temp/h2_data"));
-		
+		try {
+			// TODO: cfg
+			final Path localFile = FileUtils.copy(Paths.get("//htpc/Share/h2/dump_lite2.csv"), workDir);
+			loadFile(localFile.toFile());
+		} catch (NoSuchFileException e) {
+			Logger.warn(e);
+		}
+
+		watchDog = new FlatFileWatchDogNew(Paths.get("//htpc/Share/h2/dump_lite2.csv"), this);
 	}
 
 	public void startWatch() throws IOException {
@@ -78,7 +78,9 @@ public class FlatFileLoader implements EventsListener, DisposableBean {
 
 	@Override
 	public void destroy() throws Exception {
-		watchDog.stop();
+		if (watchDog != null) {
+			watchDog.stop();
+		}
 	}
 
 	private void loadFile(File file) throws Exception {
@@ -97,7 +99,7 @@ public class FlatFileLoader implements EventsListener, DisposableBean {
 		itemReader.setLineMapper(lineMapper);
 		itemReader.open(new ExecutionContext());
 		PexOnline pex = null;
-		//TODO: cfg
+		// TODO: cfg
 		final int maxSkipCount = 300;
 		int skipCount = 0;
 
@@ -161,14 +163,7 @@ public class FlatFileLoader implements EventsListener, DisposableBean {
 
 	@Override
 	public void onModify(Path path) {
-		// TODO Auto-generated method stub
+		Logger.info("File new or modified " + path);
 
 	}
-
-	@Override
-	public void onDelete(Path path) {
-		// TODO Auto-generated method stub
-
-	}
-
 }
