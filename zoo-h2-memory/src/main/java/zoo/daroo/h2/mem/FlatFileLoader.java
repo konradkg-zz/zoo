@@ -1,5 +1,8 @@
 package zoo.daroo.h2.mem;
 
+import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -122,5 +125,10 @@ public class FlatFileLoader {
 			Logger.error("Cannot obtain file attributes", e);
 		}
 		return null;
+	}
+	
+	private Path copy(Path from, Path toDir) throws IOException {
+		final Path to = toDir.resolve(from.getFileName());
+		return Files.copy(from, to, REPLACE_EXISTING, COPY_ATTRIBUTES);
 	}
 }
