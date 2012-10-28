@@ -23,7 +23,7 @@ import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.FileSystemResource;
 
-import zoo.daroo.h2.mem.FlatFileWatchDogNew.FileChangeEventListener;
+import zoo.daroo.h2.mem.FlatFileWatchDog.FileChangeEventListener;
 import zoo.daroo.h2.mem.bo.PexOnline;
 import zoo.daroo.h2.mem.dao.PexOnlineDao;
 
@@ -50,7 +50,7 @@ public class FlatFileLoader implements FileChangeEventListener, DisposableBean {
 	@Named(PexOnlineDao.BEAN_ID)
 	private PexOnlineDao pexOnlineDao;
 
-	private FlatFileWatchDogNew watchDog;
+	private FlatFileWatchDog watchDog;
 	private Path workDir;
 
 	public void init() throws Exception {
@@ -69,7 +69,7 @@ public class FlatFileLoader implements FileChangeEventListener, DisposableBean {
 			Logger.warn(e);
 		}
 
-		watchDog = new FlatFileWatchDogNew(Paths.get("//htpc/Share/h2/dump_lite2.csv"), this);
+		watchDog = new FlatFileWatchDog(Paths.get("//htpc/Share/h2/dump_lite2.csv"), this);
 	}
 
 	public void startWatch() throws IOException {

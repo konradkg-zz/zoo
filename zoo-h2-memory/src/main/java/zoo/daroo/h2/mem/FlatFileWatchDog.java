@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class FlatFileWatchDogNew {
+public class FlatFileWatchDog {
 	
 	private final Log logger = LogFactory.getLog(getClass());
 	
@@ -23,7 +23,7 @@ public class FlatFileWatchDogNew {
 	
 	private AtomicBoolean started = new AtomicBoolean(false);
 	
-	public FlatFileWatchDogNew(Path fileToWatch, FileChangeEventListener eventListener) {
+	public FlatFileWatchDog(Path fileToWatch, FileChangeEventListener eventListener) {
 		this.file = fileToWatch.toAbsolutePath();
 		this.eventListener = eventListener;
 	}
