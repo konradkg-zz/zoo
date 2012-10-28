@@ -5,7 +5,9 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
@@ -13,12 +15,12 @@ import org.apache.commons.logging.LogFactory;
 
 public abstract class FileUtils {
 	private final static Log Logger = LogFactory.getLog(FileUtils.class);
-	
+
 	public static Path copy(Path from, Path toDir) throws IOException {
 		final Path to = toDir.resolve(from.getFileName());
 		return Files.copy(from, to, REPLACE_EXISTING, COPY_ATTRIBUTES);
 	}
-	
+
 	public static Path tryCopy(Path from, Path toDir, int tryAttempts) throws IOException {
 		IOException error = null;
 		for (int i = 1; i <= tryAttempts; i++) {
@@ -36,5 +38,10 @@ public abstract class FileUtils {
 			}
 		}
 		throw error;
+	}
+
+	public static BasicFileAttributes getFileAttributes(Path filePath) throws IOException {
+		final Path path = filePath.toRealPath(LinkOption.NOFOLLOW_LINKS);
+		return Files.readAttributes(path, BasicFileAttributes.class);
 	}
 }

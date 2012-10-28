@@ -147,7 +147,7 @@ public class FlatFileLoader implements EventsListener, DisposableBean {
 		BasicFileAttributes attr = null;
 		try {
 			final Path path = Paths.get(resource.getURI()).toAbsolutePath();
-			attr = Files.readAttributes(path, BasicFileAttributes.class);
+			attr = FileUtils.getFileAttributes(path);
 			final FileTime lastModifiedTime = attr.lastModifiedTime();
 			Logger.info("File path=" + path + ", last modified time=" + lastModifiedTime + " (millis="
 					+ lastModifiedTime.toMillis() + ")"
