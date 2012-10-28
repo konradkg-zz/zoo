@@ -5,8 +5,6 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
@@ -22,13 +20,18 @@ public class FlatFileWatchDog {
 
 	private Log logger = LogFactory.getLog(getClass());
 
-	private Path baseDir;
+	private final Path baseDir;
 
 	private WatchService watcher;
 	private Thread watchDogTask;
 
 	private AtomicBoolean started = new AtomicBoolean(false);
-	private EventsListener eventsListener;
+	private final EventsListener eventsListener;
+	
+	public FlatFileWatchDog(EventsListener eventsListener, Path baseDir) {
+		this.eventsListener = eventsListener;
+		this.baseDir = baseDir;
+	}
 
 	public void start() throws IOException {
 		if (started.compareAndSet(false, true)) {
@@ -71,19 +74,6 @@ public class FlatFileWatchDog {
 		} catch (IOException e) {
 			logger.error("Restart: Error occured during start().", e);
 		}
-	}
-
-	public void init(Path baseDir, EventsListener listener) throws IOException {
-		try (DirectoryStream<Path> ds = Files.newDirectoryStream(baseDir)) {
-			for (Path file : ds) {
-				eventsListener.onInit(file);
-			}
-		}
-		
-		this.baseDir = baseDir.toAbsolutePath();
-		this.eventsListener = listener;
-		
-		start();
 	}
 
 	private WatchService registerNewWatchService() throws IOException {
@@ -174,7 +164,6 @@ public class FlatFileWatchDog {
 	}
 
 	public static interface EventsListener {
-		public void onInit(Path path);
 		public void onModify(Path path);
 		public void onDelete(Path path);
 	}
