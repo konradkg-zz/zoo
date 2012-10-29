@@ -30,6 +30,7 @@
 		<property name="createFtlIndexScriptLocation" value="classpath:META-INF/sql/create_ftl_index.sql"/>
 		<property name="createPexTempTableScriptLocation" value="classpath:META-INF/sql/create_pex_temp.sql"/>
 		<property name="switchTablesScriptLocation" value="classpath:META-INF/sql/rename_and_reindex.sql"/>
+		<property name="dropPexTempTableScriptLocation" value="classpath:META-INF/sql/drop_pex_temp.sql"/>
 	</bean>
 	
 	<bean id="FlatFileManager" class="zoo.daroo.h2.mem.FlatFileManager">

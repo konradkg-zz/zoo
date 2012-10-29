@@ -29,6 +29,7 @@ public class InternalDbManager {
 	private Resource createFtlIndexScriptLocation;
 	private Resource createPexTempTableScriptLocation;
 	private Resource switchTablesScriptLocation;
+	private Resource dropPexTempTableScriptLocation;
 
 	
 	public void initDatabase() throws IOException, SQLException {
@@ -49,6 +50,11 @@ public class InternalDbManager {
 	public void switchTables() throws IOException, SQLException {
 		final String sql = readFile(switchTablesScriptLocation);
 		executeSql(sql, "switchTables");
+	}
+	
+	public void dropPexTempTable() throws IOException, SQLException {
+		final String sql = readFile(dropPexTempTableScriptLocation);
+		executeSql(sql, "dropPexTempTable");
 	}
 	
 	private String readFile(Resource resource) throws IOException {
@@ -103,4 +109,9 @@ public class InternalDbManager {
 	public void setSwitchTablesScriptLocation(Resource switchTablesScriptLocation) {
 		this.switchTablesScriptLocation = switchTablesScriptLocation;
 	}
+
+	public void setDropPexTempTableScriptLocation(Resource dropPexTempTableScriptLocation) {
+	    this.dropPexTempTableScriptLocation = dropPexTempTableScriptLocation;
+	}
+
 }

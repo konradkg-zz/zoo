@@ -174,8 +174,12 @@ public class FlatFileManager implements FileChangeEventListener, DisposableBean 
 				internalDbManager.switchTables();
 			} catch (Exception e) {
 				Logger.error("Cannot referesh data from local file.", e);
-				
-				//TODO: drop pex_temp if exists
+			} finally {
+			    try {
+	                        internalDbManager.dropPexTempTable();
+                            } catch (Exception e) {
+                        	Logger.error("Failed to drop temp pex table", e);
+                            } 
 			}
 		}
 
