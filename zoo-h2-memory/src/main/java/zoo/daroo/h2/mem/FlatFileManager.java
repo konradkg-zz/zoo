@@ -24,6 +24,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.FileSystemResource;
 
 import zoo.daroo.h2.mem.FlatFileWatchDog.FileChangeEventListener;
+import zoo.daroo.h2.mem.bo.FileInfo;
 import zoo.daroo.h2.mem.bo.PexOnline;
 import zoo.daroo.h2.mem.dao.PexOnlineDao;
 
@@ -57,17 +58,23 @@ public class FlatFileManager implements FileChangeEventListener, DisposableBean 
 			this.workDir = Files.createDirectory(workDirPath);
 		}
 
+		final Path fileToLoadPath = Paths.get(fileToLoad);
+		BasicFileAttributes fileToLoadAttributes = null;
 		Path localFile = null;
 		try {
-			localFile = FileUtils.copy(Paths.get(fileToLoad), workDir);
+		    	fileToLoadAttributes = FileUtils.getFileAttributes(fileToLoadPath);
+			localFile = FileUtils.copy(fileToLoadPath, workDir);
 		} catch (NoSuchFileException e) {
 			Logger.warn(e);
 		}
 		if (localFile != null) {
 			loadFile(localFile.toFile());
 		}
+		
+		final FileInfo fileInfo = FileInfo.createInstance(fileToLoadPath.toString(), fileToLoadAttributes);
+		pexOnlineDao.insertFileInfo(fileInfo);
 
-		watchDog = new FlatFileWatchDog(Paths.get(fileToLoad), this);
+		watchDog = new FlatFileWatchDog(fileToLoadPath, this);
 	}
 
 	public void startWatch() throws IOException {
@@ -160,7 +167,9 @@ public class FlatFileManager implements FileChangeEventListener, DisposableBean 
 	public void onModify(Path path) {
 		Logger.info("File new or modified " + path);
 		Path localFile = null;
+		BasicFileAttributes fileToLoadAttributes = null;
 		try {
+		    	fileToLoadAttributes = FileUtils.getFileAttributes(path);
 			localFile = FileUtils.tryCopy(path, workDir, 10);
 		} catch (IOException e) {
 			Logger.error("Cannot copy file.", e);
@@ -172,6 +181,8 @@ public class FlatFileManager implements FileChangeEventListener, DisposableBean 
 				internalDbManager.createPexTempTable();
 				loadFile(localFile.toFile());
 				internalDbManager.switchTables();
+				final FileInfo fileInfo = FileInfo.createInstance(path.toString(), fileToLoadAttributes);
+				pexOnlineDao.insertFileInfo(fileInfo);
 			} catch (Exception e) {
 				Logger.error("Cannot referesh data from local file.", e);
 			} finally {

@@ -75,4 +75,10 @@
 		#{creditorIcId}
 		);
 	</insert>
+	
+	<insert id="insertFileInfo" parameterType="FileInfo" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO FILES_INFO (PATH, LAST_MODIFIED_TIME, LAST_MODIFIED_TIME_TEXT, SIZE)
+		VALUES (#{path}, #{lastModifiedTime}, #{lastModifiedTimeText}, #{size});
+	</insert>
+	
 </mapper>
