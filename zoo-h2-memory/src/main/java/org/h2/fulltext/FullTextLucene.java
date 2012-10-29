@@ -43,6 +43,12 @@ import org.h2.util.StatementBuilder;
 import org.h2.util.StringUtils;
 import org.h2.util.Utils;
 
+/**
+ * TODO: REmove this and build normalized (no PL characters) 
+ * column with all strings required for FTS
+ *
+ */
+
 public class FullTextLucene extends FullText {
 
     /**
