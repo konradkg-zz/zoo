@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:httpj="http://cxf.apache.org/transports/http-jetty/configuration"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://cxf.apache.org/transports/http-jetty/configuration http://cxf.apache.org/schemas/configuration/http-jetty.xsd">
+
+	<httpj:engine-factory bus="cxf">
+		<httpj:engine port="9001">
+			<httpj:threadingParameters minThreads="5" maxThreads="15" />
+			<httpj:connector>
+				<bean class="org.eclipse.jetty.server.bio.SocketConnector">
+					<property name="port" value="9001" />
+				</bean>
+			</httpj:connector>
+			<httpj:handlers>
+				<bean class="org.eclipse.jetty.server.handler.DefaultHandler" />
+			</httpj:handlers>
+			<httpj:sessionSupport>false</httpj:sessionSupport>
+		</httpj:engine>
+	</httpj:engine-factory>
+
+</beans>
