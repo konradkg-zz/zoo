@@ -13,6 +13,8 @@
 		<property name="properties">
 			<value>
 				fileToLoad=d:/Temp/h2_data/dump_lite2.csv
+				maxSkipCount=300
+				delimiter=;
 				baseDir=.
 			</value>
 		</property>
@@ -32,6 +34,8 @@
 	
 	<bean id="FlatFileManager" class="zoo.daroo.h2.mem.FlatFileManager">
 		<property name="fileToLoad" value="${fileToLoad}"/>
+		<property name="maxSkipCount" value="${maxSkipCount}"/>
+		<property name="delimiter" value="${delimiter}"/>
 		<property name="baseDir" value="${baseDir}"/>
 	</bean>
 		

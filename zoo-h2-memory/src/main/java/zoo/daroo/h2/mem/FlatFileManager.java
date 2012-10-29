@@ -22,25 +22,11 @@ import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 
 import zoo.daroo.h2.mem.FlatFileWatchDog.FileChangeEventListener;
 import zoo.daroo.h2.mem.bo.PexOnline;
 import zoo.daroo.h2.mem.dao.PexOnlineDao;
 
-/*
- * TODO: 
- * 1) rename to FlatFilemanager
- * 2) Switch alg:
- * 	a) check if new file is ready
- * 	b) wait random() number of seconds 0 - 300
- *  c) get file modified date and fileSize and store in DB
- *  	(Files.readAttributes(path, BasicFileAttributes.class); attr.lastAccessTime())
- *  d) copy file to local drive (Files.copy(Path source, Path target, CopyOption... options)) - overwrite
- *  e) load file
- * 3) if connection lost to remote file compare timestamp stored in DB and file size
- * 
- */
 public class FlatFileManager implements FileChangeEventListener, DisposableBean {
 
 	public final static String BEAN_ID = "FlatFileManager";
@@ -60,6 +46,8 @@ public class FlatFileManager implements FileChangeEventListener, DisposableBean 
 	
 	private String baseDir;
 	private String fileToLoad;
+	private int maxSkipCount;
+	private char delimiter;
 
 	public void init() throws Exception {
 		final Path workDirPath = Paths.get(baseDir, "work").toAbsolutePath();
@@ -94,31 +82,28 @@ public class FlatFileManager implements FileChangeEventListener, DisposableBean 
 	}
 
 	private void loadFile(File file) throws Exception {
-		long start = System.nanoTime();
+		final long start = System.nanoTime();
 
-		FlatFileItemReader<PexOnline> itemReader = new FlatFileItemReader<PexOnline>();
+		final FlatFileItemReader<PexOnline> itemReader = new FlatFileItemReader<PexOnline>();
 		itemReader.setEncoding("UTF-8");
 
 		final FileSystemResource resource = new FileSystemResource(file);
 		logFileAttributes(resource);
 		itemReader.setResource(resource);
 
-		DefaultLineMapper<PexOnline> lineMapper = new DefaultLineMapper<PexOnline>();
-		lineMapper.setLineTokenizer(new DelimitedLineTokenizer(';'));
+		final DefaultLineMapper<PexOnline> lineMapper = new DefaultLineMapper<PexOnline>();
+		lineMapper.setLineTokenizer(new DelimitedLineTokenizer(delimiter));
 		lineMapper.setFieldSetMapper(new PexOnline.PexOnlineFieldSetMapper());
 		itemReader.setLineMapper(lineMapper);
 		itemReader.open(new ExecutionContext());
-		PexOnline pex = null;
-		// TODO: cfg
-		final int maxSkipCount = 300;
+		
 		int skipCount = 0;
-
 		long line = 0;
 
 		try {
 			for (;;) {
 				try {
-					pex = itemReader.read();
+				    	final PexOnline pex = itemReader.read();
 					if (pex == null)
 						break;
 
@@ -149,7 +134,7 @@ public class FlatFileManager implements FileChangeEventListener, DisposableBean 
 		} finally {
 			itemReader.close();
 		}
-		Logger.info("Skip count: " + skipCount);
+		Logger.info("Total lines in file: " + line + " skipped: " + skipCount);
 		long stop = System.nanoTime();
 		Logger.info("Load time: " + TimeUnit.SECONDS.convert(stop - start, TimeUnit.NANOSECONDS) + "[s], "
 				+ TimeUnit.MILLISECONDS.convert(stop - start, TimeUnit.NANOSECONDS) + "[ms].");
@@ -161,7 +146,7 @@ public class FlatFileManager implements FileChangeEventListener, DisposableBean 
 			final Path path = Paths.get(resource.getURI()).toAbsolutePath();
 			attr = FileUtils.getFileAttributes(path);
 			final FileTime lastModifiedTime = attr.lastModifiedTime();
-			Logger.info("File path=" + path + ", last modified time=" + lastModifiedTime + " (millis="
+			Logger.info("Loading file. File path=" + path + ", last modified time=" + lastModifiedTime + " (millis="
 					+ lastModifiedTime.toMillis() + ")"
 					+ ", size=" + attr.size());
 			return attr;
@@ -202,5 +187,14 @@ public class FlatFileManager implements FileChangeEventListener, DisposableBean 
 
 	public void setFileToLoad(String fileToLoad) {
 	    this.fileToLoad = fileToLoad;
-	}	
+	}
+
+	public void setMaxSkipCount(int maxSkipCount) {
+	    this.maxSkipCount = maxSkipCount;
+	}
+
+	public void setDelimiter(char delimiter) {
+	    this.delimiter = delimiter;
+	}
+	
 }
