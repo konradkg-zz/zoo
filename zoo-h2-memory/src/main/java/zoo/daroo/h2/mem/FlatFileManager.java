@@ -22,6 +22,7 @@ import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 import zoo.daroo.h2.mem.FlatFileWatchDog.FileChangeEventListener;
 import zoo.daroo.h2.mem.bo.PexOnline;
@@ -40,9 +41,9 @@ import zoo.daroo.h2.mem.dao.PexOnlineDao;
  * 3) if connection lost to remote file compare timestamp stored in DB and file size
  * 
  */
-public class FlatFileLoader implements FileChangeEventListener, DisposableBean {
+public class FlatFileManager implements FileChangeEventListener, DisposableBean {
 
-	public final static String BEAN_ID = "FlatFileLoader";
+	public final static String BEAN_ID = "FlatFileManager";
 
 	private final Log Logger = LogFactory.getLog(getClass());
 
@@ -56,9 +57,12 @@ public class FlatFileLoader implements FileChangeEventListener, DisposableBean {
 
 	private FlatFileWatchDog watchDog;
 	private Path workDir;
+	
+	private String baseDir;
+	private String fileToLoad;
 
 	public void init() throws Exception {
-		final Path workDirPath = Paths.get(".", "work").toAbsolutePath();
+		final Path workDirPath = Paths.get(baseDir, "work").toAbsolutePath();
 		if (Files.exists(workDirPath)) {
 			this.workDir = workDirPath;
 		} else {
@@ -67,8 +71,7 @@ public class FlatFileLoader implements FileChangeEventListener, DisposableBean {
 
 		Path localFile = null;
 		try {
-			// TODO: cfg
-			localFile = FileUtils.copy(Paths.get("//htpc/Share/h2/dump_lite2.csv"), workDir);
+			localFile = FileUtils.copy(Paths.get(fileToLoad), workDir);
 		} catch (NoSuchFileException e) {
 			Logger.warn(e);
 		}
@@ -76,7 +79,7 @@ public class FlatFileLoader implements FileChangeEventListener, DisposableBean {
 			loadFile(localFile.toFile());
 		}
 
-		watchDog = new FlatFileWatchDog(Paths.get("//htpc/Share/h2/dump_lite2.csv"), this);
+		watchDog = new FlatFileWatchDog(Paths.get(fileToLoad), this);
 	}
 
 	public void startWatch() throws IOException {
@@ -192,4 +195,12 @@ public class FlatFileLoader implements FileChangeEventListener, DisposableBean {
 		}
 
 	}
+
+	public void setBaseDir(String baseDir) {
+	    this.baseDir = baseDir;
+	}
+
+	public void setFileToLoad(String fileToLoad) {
+	    this.fileToLoad = fileToLoad;
+	}	
 }

@@ -13,8 +13,8 @@ public class Server implements InitializingBean, DisposableBean {
 	private InternalDbManager internalDbManager;
 	
 	@Inject
-	@Named(FlatFileLoader.BEAN_ID)
-	private FlatFileLoader fileLoader;
+	@Named(FlatFileManager.BEAN_ID)
+	private FlatFileManager fileLoader;
 	
 	
 	@Override

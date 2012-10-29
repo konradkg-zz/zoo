@@ -9,6 +9,18 @@
 	
 	<context:component-scan base-package="zoo.daroo.h2.mem"/>
 	
+	<bean id="defaultProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="properties">
+			<value>
+				fileToLoad=d:/Temp/h2_data/dump_lite2.csv
+				baseDir=.
+			</value>
+		</property>
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="systemPropertiesMode" value="2" />
+	</bean>
+	
+	
 	<bean id="JdbcConnectionPoolBean" class="zoo.daroo.h2.mem.spring.JdbcConnectionPoolBean"/>
 	
 	<bean id="InternalDbManager" class="zoo.daroo.h2.mem.InternalDbManager">
@@ -18,8 +30,11 @@
 		<property name="switchTablesScriptLocation" value="classpath:META-INF/sql/rename_and_reindex.sql"/>
 	</bean>
 	
-	<bean id="FlatFileLoader" class="zoo.daroo.h2.mem.FlatFileLoader"/>
-	
+	<bean id="FlatFileManager" class="zoo.daroo.h2.mem.FlatFileManager">
+		<property name="fileToLoad" value="${fileToLoad}"/>
+		<property name="baseDir" value="${baseDir}"/>
+	</bean>
+		
 	<bean id="pexOnlineSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="JdbcConnectionPoolBean" />
         <property name="typeAliasesPackage" value="zoo.daroo.h2.mem.bo" />
