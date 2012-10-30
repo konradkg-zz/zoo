@@ -15,7 +15,7 @@
 	<bean id="defaultProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="properties">
 			<value>
-				fileToLoad=d:/Temp/h2_data/dump_lite2.csv
+				fileToLoad=p:/Temp/h2_data/dump_lite2.csv
 				maxSkipCount=300
 				delimiter=;
 				baseDir=.

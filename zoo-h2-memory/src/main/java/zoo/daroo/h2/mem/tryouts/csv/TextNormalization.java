@@ -1,18 +1,15 @@
 package zoo.daroo.h2.mem.tryouts.csv;
 
-import java.beans.XMLEncoder;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.Normalizer;
 
-import org.apache.commons.codec.EncoderException;
-import org.apache.commons.codec.language.bm.BeiderMorseEncoder;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.analysis.ASCIIFoldingFilter;
 
 public class TextNormalization {
     
     public static void main(String[] args) {
-	String text = "Ącki Żory \"Kraków\"";
+	String text = "Ącki Żory \"Kraków\" & Spółka;";
 	System.out.println(text);
 	
 	text = text.replace(' ', '+');
@@ -22,16 +19,16 @@ public class TextNormalization {
 	
 	System.out.println("isAsciiPrintable: " + StringUtils.isAsciiPrintable(text));
 	
+	char[] input = text.toCharArray();
+	char[] output = new char[input.length];
+	ASCIIFoldingFilter.foldToASCII(input, 0, output, 0, input.length);
 	
+	text = String.valueOf(output);
+	System.out.println(text);
 	
-//	try {
-//	    text = URLEncoder.encode(text, "UTF-8");
-//	    System.out.println(text);
-//        } catch (UnsupportedEncodingException e) {
-//	    // TODO Auto-generated catch block
-//	    e.printStackTrace();
-//        }
-	//StringUtils.
+	text = StringEscapeUtils.escapeXml(text);
+	System.out.println(text);
+	
     }
 
 }
