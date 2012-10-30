@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pex:pexDetails xsi:schemaLocation="http://www.zoo.com/pex/v001 PexOnline.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pex="http://www.zoo.com/pex/v001">
+	<pex:meta>
+		<pex:title>Kupno Sprzedaż &quot;ptyś&quot; Jerzy Kowalski   (Nasz Site)</pex:title>
+		<pex:description>KUPNO+SPRZEDAŻ+&quot;PTYŚ&quot;+JERZY+KOWALSKI jest na internetowej giełdzie wierzytelności Nasz Site. Kup dług i zostań wierzycielem</pex:description>
+		<pex:keywords>Kupno Sprzedaż "ptyś" Jerzy Kowalski , zadłużenie Kupno Sprzedaż "ptyś" Jerzy Kowalski , wierzytelność Kupno Sprzedaż "ptyś" Jerzy Kowalski </pex:keywords>
+	</pex:meta>
+	<pex:pexOnline>
+		<pex:pexCaseRefNo>String</pex:pexCaseRefNo>
+		<pex:pexCurrency>String</pex:pexCurrency>
+		<pex:pexAmountTotal>0.0</pex:pexAmountTotal>
+		<pex:pexDateDue>1967-08-13</pex:pexDateDue>
+		<pex:pexDateModified>2001-12-17T09:30:47Z</pex:pexDateModified>
+		<pex:debtorNip>**********</pex:debtorNip>
+		<pex:email>abc@xyz.com</pex:email>
+	</pex:pexOnline>
+</pex:pexDetails>
