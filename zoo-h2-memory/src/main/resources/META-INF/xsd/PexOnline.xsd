@@ -115,4 +115,30 @@ http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
 	3) Last-Modified
 
 -->
+
+<!-- 
+	Paging (limit 100):
+	1) count all records meets criteria
+SELECT count(*) FROM PEX 
+WHERE DEBTOR_FIRST_NAME = 'Paweł';
+    1a) if row count == 0 break;
+
+	2) calculate number of pages rows / limit as int
+select 1089 /100; 
+	2a) if (offset == null || offset < 0) set 0
+	2b) if offset > last_page_no * limit set  last_page_no * limit
+
+	3) execute select
+SELECT * FROM PEX 
+WHERE DEBTOR_FIRST_NAME = 'Paweł';
+ORDER BY PEX_DATE_MODIFIED DESC
+LIMIT 100 OFFSET 300;
+
+  4) calculate next offset ==> offset + limit
+  4a) if offset + limit > last_page_no * limit set null
+  
+  5) calculate prev offset ==> offset - limit
+  5a) if offset - limit < 0 set null
+
+-->
 </xsd:schema>
