@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:pex="http://www.zoo.com/pex/v001" targetNamespace="http://www.zoo.com/pex/v001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:element name="pexOnline">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="pex:link" minOccurs="0"/>
+				<xsd:element name="pexCaseRefNo" type="xsd:string" nillable="false" minOccurs="0"/>
+				<!--xsd:element name="pexCanPublishCreditorData" type="xsd:boolean" nillable="false"/-->
+				<xsd:element name="pexCurrency" type="xsd:string" nillable="false" minOccurs="0"/>
+				<xsd:element name="pexAmountTotal" type="xsd:decimal" nillable="false" minOccurs="0"/>
+				<xsd:element name="pexDateDue" type="xsd:date" nillable="false" minOccurs="0"/>
+				<xsd:element name="pexDateModified" type="xsd:dateTime" nillable="false" minOccurs="0"/>
+				<!-- more goes on...-->
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="pexSearchResult">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="pex:metaData" minOccurs="0" maxOccurs="unbounded"/>
+				<!--xsd:element ref="pex:pexOnline" minOccurs="0" maxOccurs="unbounded"/-->
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="metaData">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="title" type="xsd:string" nillable="false" minOccurs="0"/>
+				<xsd:element name="description" type="xsd:string" nillable="false" minOccurs="0"/>
+				<xsd:element name="keywords" type="xsd:string" nillable="false" minOccurs="0"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="link">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="value" nillable="false" minOccurs="0"/>
+			</xsd:sequence>
+			<xsd:attribute name="href" type="xsd:string" use="required"/>
+			<xsd:attribute name="rel" type="xsd:string" use="optional"/>
+			<xsd:attribute name="title" type="xsd:string" use="optional"/>
+			<!-- href="/pex/1234?Jan+Kowalski"-->
+			<!-- href="/search?offset=80"-->
+			<!-- href="/search?text="ssss"&offset=80"-->
+			<!-- rel="prev", "next"
+				na detaiils: kolejny debt
+				na search: kolejny page
+			-->
+			<!-- page number jako value-->
+			<!-- < a href title="Szczegóły zadłużenia dla: &quot;AUTO ABC&quot; BOGNA OLEJNIK " global attribute -->
+		</xsd:complexType>
+	</xsd:element>
+	<!-- metadata
+	Details:
+	name="title" content="Kupno Sprzedaż &quot;ptyś&quot; Jerzy Kowalski   (Nasz Site)"
+	name="Description" content="KUPNO+SPRZEDAŻ+&quot;PTYŚ&quot;+JERZY+KOWALSKI jest na internetowej giełdzie wierzytelności Nasz Site. Kup dług i zostań wierzycielem"
+    name="keywords" content="Kupno Sprzedaż "ptyś" Jerzy Kowalski , zadłużenie Kupno Sprzedaż "ptyś" Jerzy Kowalski , wierzytelność Kupno Sprzedaż "ptyś" Jerzy Kowalski " 
+
+	Search: 
+	name="title" content="Lista zadłużeń (Nasz Site)"
+	name="Description" content="Przeglądaj zadłużenia na sprzedaż w (Nasz Site). Sprawdż czy jesteś na największej internetowej liście zadłużeń na sprzedaż."
+	name="keywords" content="market długów, market zadłużeń, sprzedaż długów, długi na sprzedaż, wierzytelności na sprzedaż, zadłużenia na sprzedaż, kupno długów, kupno wierzytelności, zakup wierzytelności, kupno zadłużeń, giełda długów, giełda wierzytelności, lista długów, hipoteki na sprzedaż, kupno hipoteki, sprzedaż zadłużonego mieszkania "
+
+
+<meta name="keywords" content="Kupno Sprzedaż "ptyś" Jerzy Kowalski , zadłużenie Kupno Sprzedaż "ptyś" Jerzy Kowalski , wierzytelność Kupno Sprzedaż "ptyś" Jerzy Kowalski " />
+
+
+<meta name="description" content="Przeglądaj zadłużenia na sprzedaż w MARKET DŁUGÓW. Sprawdż czy jesteś na największej internetowej liście zadłużeń na sprzedaż." />
+<meta name="keywords" content="market długów, market zadłużeń, sprzedaż długów, długi na sprzedaż, wierzytelności na sprzedaż, zadłużenia na sprzedaż, kupno długów, kupno wierzytelności, zakup wierzytelności, kupno zadłużeń, giełda długów, giełda wierzytelności, lista długów, hipoteki na sprzedaż, kupno hipoteki, sprzedaż zadłużonego mieszkania " />
+	-->
+	<!--
+		search query URL:
+		ctx/search?text="bla bal..."&limit=20&offset=80
+		ctx/search?text="bla bal..."&offset=80 <- limit hardcoded
+		ctx/search?offset=80 <-no text, first request, google case
+
+		details url:
+		ctx/1234?Jan+Kowalski 
+	< a href title="Szczegóły zadłużenia dla: &quot;AUTO ABC&quot; BOGNA OLEJNIK " global attribute
+	-->
+	<!-- 
+	HEaders:
+http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+	1) Date?
+	2) ETag?
+	3) Last-Modified
+
+-->
+</xsd:schema>
