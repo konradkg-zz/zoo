@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pex:pexSearchResult xsi:schemaLocation="http://www.zoo.com/pex/v001 PexOnline.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pex="http://www.zoo.com/pex/v001">
+	<pex:meta>
+		<pex:title>Lista zadłużeń (Nasz Site)</pex:title>
+		<pex:description>Przeglądaj zadłużenia na sprzedaż w (Nasz Site). Sprawdż czy jesteś na największej internetowej liście zadłużeń na sprzedaż.</pex:description>
+		<pex:keywords>market długów, market zadłużeń, sprzedaż długów, długi na sprzedaż, wierzytelności na sprzedaż, zadłużenia na sprzedaż, kupno długów, kupno wierzytelności, zakup wierzytelności, kupno zadłużeń, giełda długów, giełda wierzytelności, lista długów, hipoteki na sprzedaż, kupno hipoteki, sprzedaż zadłużonego mieszkania</pex:keywords>
+	</pex:meta>
+	<pex:result>
+		<pex:pexOnline>
+			<pex:link title="Szczegóły zadłużenia dla: Jan Kowalski" href="/pex/1234?Jan+Kowalski"/>
+			<pex:pexCaseRefNo>String</pex:pexCaseRefNo>
+			<pex:pexCurrency>String</pex:pexCurrency>
+			<pex:pexAmountTotal>0.0</pex:pexAmountTotal>
+			<pex:pexDateDue>1967-08-13</pex:pexDateDue>
+			<pex:pexDateModified>2001-12-17T09:30:47Z</pex:pexDateModified>
+			<pex:debtorNip>**********</pex:debtorNip>
+			<pex:email>a@.b.com</pex:email>
+		</pex:pexOnline>
+		<pex:pexOnline>
+			<pex:link title="Szczegóły zadłużenia dla: Jan Nowak" href="/pex/1234?Jan+Nowak"/>
+			<pex:pexCaseRefNo>String</pex:pexCaseRefNo>
+			<pex:pexCurrency>String</pex:pexCurrency>
+			<pex:pexAmountTotal>0.0</pex:pexAmountTotal>
+			<pex:pexDateDue>1967-08-13</pex:pexDateDue>
+			<pex:pexDateModified>2001-12-17T09:30:47Z</pex:pexDateModified>
+			<pex:debtorNip>**********</pex:debtorNip>
+			<pex:email>y@.z.biz</pex:email>
+		</pex:pexOnline>
+	</pex:result>
+	<pex:pages current="2" total="5">
+		<pex:link href="/search?text='Jan'">1</pex:link>
+		<pex:link href="/search?text='Jan'&amp;offset=20">2</pex:link>
+		<pex:link href="/search?text='Jan'&amp;offset=40">3</pex:link>
+		<pex:link href="/search?text='Jan'&amp;offset=60">4</pex:link>
+		<pex:link href="/search?text='Jan'&amp;offset=80">5</pex:link>
+		<pex:link rel="prev" href="/search?text='Jan'"/>
+		<pex:link rel="next" href="/search?text='Jan'&amp;offset=40"/>
+	</pex:pages>
+</pex:pexSearchResult>

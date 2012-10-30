@@ -10,6 +10,9 @@
 				<xsd:element name="pexAmountTotal" type="xsd:decimal" nillable="false" minOccurs="0"/>
 				<xsd:element name="pexDateDue" type="xsd:date" nillable="false" minOccurs="0"/>
 				<xsd:element name="pexDateModified" type="xsd:dateTime" nillable="false" minOccurs="0"/>
+				<xsd:element name="debtorNip" type="xsd:string" nillable="false" minOccurs="0"/>
+				<xsd:element name="email" type="xsd:string" nillable="false" minOccurs="0"/>
+				
 				<!-- more goes on...-->
 			</xsd:sequence>
 		</xsd:complexType>
