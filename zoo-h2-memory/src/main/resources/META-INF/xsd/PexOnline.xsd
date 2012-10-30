@@ -17,12 +17,37 @@
 	<xsd:element name="pexSearchResult">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="pex:metaData" minOccurs="0" maxOccurs="unbounded"/>
-				<!--xsd:element ref="pex:pexOnline" minOccurs="0" maxOccurs="unbounded"/-->
+				<xsd:element ref="pex:meta"/>
+				<xsd:element ref="pex:result" minOccurs="0"/>
+				<xsd:element ref="pex:pages" minOccurs="0"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="metaData">
+	<xsd:element name="pexDetails">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="pex:meta"/>
+				<xsd:element ref="pex:pexOnline" minOccurs="0"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="result">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="pex:pexOnline" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="pages">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="pex:link" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+			<xsd:attribute name="total" type="xsd:int" use="required"/>
+			<xsd:attribute name="current" type="xsd:int" use="optional"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="meta">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="title" type="xsd:string" nillable="false" minOccurs="0"/>
@@ -33,21 +58,22 @@
 	</xsd:element>
 	<xsd:element name="link">
 		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="value" nillable="false" minOccurs="0"/>
-			</xsd:sequence>
-			<xsd:attribute name="href" type="xsd:string" use="required"/>
-			<xsd:attribute name="rel" type="xsd:string" use="optional"/>
-			<xsd:attribute name="title" type="xsd:string" use="optional"/>
-			<!-- href="/pex/1234?Jan+Kowalski"-->
-			<!-- href="/search?offset=80"-->
-			<!-- href="/search?text="ssss"&offset=80"-->
-			<!-- rel="prev", "next"
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:string">
+					<xsd:attribute name="href" type="xsd:string" use="required"/>
+					<xsd:attribute name="rel" type="xsd:string" use="optional"/>
+					<xsd:attribute name="title" type="xsd:string" use="optional"/>
+				</xsd:extension>
+				<!-- href="/pex/1234?Jan+Kowalski"-->
+				<!-- href="/search?offset=80"-->
+				<!-- href="/search?text="ssss"&offset=80"-->
+				<!-- rel="prev", "next"
 				na detaiils: kolejny debt
 				na search: kolejny page
 			-->
-			<!-- page number jako value-->
-			<!-- < a href title="Szczegóły zadłużenia dla: &quot;AUTO ABC&quot; BOGNA OLEJNIK " global attribute -->
+				<!-- page number jako value-->
+				<!-- < a href title="Szczegóły zadłużenia dla: &quot;AUTO ABC&quot; BOGNA OLEJNIK " global attribute -->
+			</xsd:simpleContent>
 		</xsd:complexType>
 	</xsd:element>
 	<!-- metadata
