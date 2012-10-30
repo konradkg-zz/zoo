@@ -283,7 +283,9 @@ public class FullTextLucene extends FullText {
 			    .open(new File(path));
 		    boolean recreate = !IndexReader.indexExists(indexDir);
 		    
-		    Analyzer analyzer = new PolishAnalyzer(Version.LUCENE_36);
+		    //Analyzer analyzer = new PolishAnalyzer(Version.LUCENE_36);
+		    Analyzer analyzer = new CustomAnalyzer(Version.LUCENE_36);
+		    
 		    //Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
 		    IndexWriter writer = new IndexWriter(indexDir, analyzer, recreate,
 			    IndexWriter.MaxFieldLength.UNLIMITED);
