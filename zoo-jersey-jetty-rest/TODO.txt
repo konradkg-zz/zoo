@@ -1,0 +1,7 @@
+http://dropwizard.codahale.com/getting-started/
+http://dropwizard.codahale.com/getting-started/#metrics-for-metrics
+
+http://jersey.java.net/nonav/documentation/latest/user-guide.html
+
+http://docs.codehaus.org/display/JETTY/Embedding+Jetty
+
