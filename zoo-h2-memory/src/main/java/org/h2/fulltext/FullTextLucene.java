@@ -11,6 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.lucene.analysis.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.pl.PolishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -284,7 +285,10 @@ public class FullTextLucene extends FullText {
 		    boolean recreate = !IndexReader.indexExists(indexDir);
 		    
 		    //Analyzer analyzer = new PolishAnalyzer(Version.LUCENE_36);
-		    Analyzer analyzer = new CustomAnalyzer(Version.LUCENE_36);
+		    //Analyzer analyzer = new CustomAnalyzer(Version.LUCENE_36);
+		    //Analyzer analyzer = new CustomPolishAnalyzer(Version.LUCENE_36);
+		    Analyzer analyzer = new CustomPolishAnalyzer1(Version.LUCENE_36);
+		    
 		    
 		    //Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
 		    IndexWriter writer = new IndexWriter(indexDir, analyzer, recreate,
@@ -442,7 +446,7 @@ public class FullTextLucene extends FullText {
 	    // reuse the same analyzer; it's thread-safe;
 	    // also allows subclasses to control the analyzer used.
 	    Analyzer analyzer = access.writer.getAnalyzer();
-	    QueryParser parser = new QueryParser(Version.LUCENE_30, LUCENE_FIELD_DATA, analyzer);
+	    QueryParser parser = new QueryParser(Version.LUCENE_36, LUCENE_FIELD_DATA, analyzer);
 	    Query query = parser.parse(text);
 	    // Lucene 3 insists on a hard limit and will not provide
 	    // a total hits value. Take at least 100 which is
