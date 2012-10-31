@@ -69,11 +69,11 @@ public class FlatFileManager implements FileChangeEventListener, DisposableBean 
 		}
 		if (localFile != null) {
 			loadFile(localFile.toFile());
+			final FileInfo fileInfo = FileInfo.createInstance(fileToLoadPath.toString(), fileToLoadAttributes);
+			pexOnlineDao.insertFileInfo(fileInfo);
 		}
 		
-		final FileInfo fileInfo = FileInfo.createInstance(fileToLoadPath.toString(), fileToLoadAttributes);
-		pexOnlineDao.insertFileInfo(fileInfo);
-
+		
 		watchDog = new FlatFileWatchDog(fileToLoadPath, this);
 	}
 
