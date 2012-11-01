@@ -8,6 +8,10 @@
 			<list>
 				<bean id="Connector" class="org.eclipse.jetty.server.nio.SelectChannelConnector">
 					<property name="port" value="8080" />
+					<!-- DEGUG -->
+					<property name="maxIdleTime" value="3600000" />
+					<property name="soLingerTime" value="-1" />
+					
 				</bean>
 			</list>
 		</property>
@@ -22,8 +26,7 @@
 			</bean>
 		</property>
 	</bean>
-	<bean id="contexts"
-		class="org.eclipse.jetty.server.handler.ContextHandlerCollection">
+	<bean id="contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection">
 		<property name="handlers">
 			<list>
 				<bean id="defaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler">
@@ -31,8 +34,6 @@
 				</bean>
 			</list>
 		</property>
-
-
 	</bean>
 
 
