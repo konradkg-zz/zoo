@@ -6,8 +6,10 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
+	<context:component-scan base-package="zoo.jersey.jetty" />
+
 	<bean id="Server" class="org.eclipse.jetty.server.Server"
-		init-method="start" destroy-method="stop" depends-on="ContextHandlerInit">
+		init-method="start" destroy-method="stop">
 		<property name="connectors">
 			<list>
 				<bean id="Connector" class="org.eclipse.jetty.server.nio.SelectChannelConnector">
@@ -24,8 +26,8 @@
 			<bean id="handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
 				<property name="handlers">
 					<list>
-						<ref local="ContextHandler"/>
-						
+						<ref local="ContextHandler" />
+
 						<bean id="defaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler">
 							<property name="serveIcon" value="false" />
 							<property name="showContexts" value="false" />
@@ -52,9 +54,9 @@
 							<property name="servlet">
 								<!-- <bean class="com.sun.jersey.spi.container.servlet.ServletContainer" 
 									/> -->
-								<bean
-									class="com.sun.jersey.spi.spring.container.servlet.SpringServlet" />
-
+								<!-- <bean class="com.sun.jersey.spi.spring.container.servlet.SpringServlet" 
+									/> -->
+								<bean class="zoo.jersey.jetty.rest.spring.SpringServlet" />
 							</property>
 							<property name="name" value="jersey_api" />
 							<property name="initParameters">
@@ -78,28 +80,6 @@
 				</property>
 			</bean>
 		</property>
-		<property name="eventListeners">
-			<list>
-				<bean class="org.springframework.web.context.ContextLoaderListener" />
-			</list>
-		</property>
 	</bean>
-
-	<bean id= "ContextHandlerInit" 
-		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="targetObject">
-			<ref local="ContextHandler" />
-		</property>
-		<property name="targetMethod" value="setInitParameter" />
-		<property name="arguments">
-			<list>
-				<value>contextConfigLocation</value>
-				<value>classpath:applicationContext.xml</value>
-			</list>
-		</property>
-	</bean>
-
-	<!-- -->
-
 
 </beans>
