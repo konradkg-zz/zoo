@@ -1,29 +1,48 @@
 package zoo.boot;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class Boot {
 
-	private static boolean stop = false;
+	private final static CountDownLatch latch = new CountDownLatch(1);
+	private final static AtomicBoolean started = new AtomicBoolean(false);
 
+	private final static Thread shutdownHook = new Thread(new Runnable() {
+		@Override
+		public void run() {
+			stop(null);
+		}
+	});
+	
 	public static void start(String[] args) {
-		System.out.println("start");
-		while (!stop) {
+		if (started.compareAndSet(false, true)) {
+			System.out.println("start");
+			Runtime.getRuntime().addShutdownHook(shutdownHook);
 			try {
-				Thread.sleep(1000);
+				while(latch.await(1, TimeUnit.SECONDS) == false);
 			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				return;
 			}
-			System.out.println("running");
 		}
 	}
 
 	public static void stop(String[] args) {
-		System.out.println("stop");
-		stop = true;
+		if (started.compareAndSet(true, false)) {
+			System.out.println("stop");
+			
+			Runtime.getRuntime().removeShutdownHook(shutdownHook);
+			latch.countDown();
+		}
 	}
 
 	public static void main(String[] args) {
-		if ("start".equals(args[0])) {
+		final String command = (args.length == 0) ? "start" : args[0];
+		if ("start".equals(command)) {
 			start(args);
-		} else if ("stop".equals(args[0])) {
+		} else if ("stop".equals(command)) {
 			stop(args);
 		}
 	}
