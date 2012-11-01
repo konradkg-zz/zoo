@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-	
-	<context:component-scan base-package="zoo.jersey.jetty"/>
-
 
 	<bean id="Server" class="org.eclipse.jetty.server.Server"
-		init-method="start" destroy-method="stop">
+		init-method="start" destroy-method="stop" depends-on="ContextHandlerInit">
 		<property name="connectors">
 			<list>
 				<bean id="Connector" class="org.eclipse.jetty.server.nio.SelectChannelConnector">
@@ -28,65 +24,82 @@
 			<bean id="handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
 				<property name="handlers">
 					<list>
-						<bean class="org.eclipse.jetty.servlet.ServletContextHandler">
-							<property name="contextPath" value="/" />
-							<property name="servletHandler">
-								<bean class="org.eclipse.jetty.servlet.ServletHandler">
-									<property name="servlets">
-										<list>
-											<bean class="org.eclipse.jetty.servlet.ServletHolder">
-												<property name="servlet">
-													<bean
-														class="com.sun.jersey.spi.container.servlet.ServletContainer">
-													</bean>
-												</property>
-												<property name="name" value="jersey_api" />
-												<property name="initParameters">
-													<map>
-														<entry
-															key="com.sun.jersey.config.property.resourceConfigClass"
-															value="com.sun.jersey.api.core.PackagesResourceConfig" />
-														<entry key="com.sun.jersey.config.property.packages"
-															value="zoo.jersey.jetty.rest" />
-													</map>
-												</property>
-											</bean>
-										</list>
-									</property>
-									<property name="servletMappings">
-										<list>
-											<bean class="org.eclipse.jetty.servlet.ServletMapping">
-												<property name="pathSpec" value="/test/*" />
-												<property name="servletName" value="jersey_api" />
-											</bean>
-										</list>
-									</property>
-								</bean>
-							</property>
-						</bean>
-
+						<ref local="ContextHandler"/>
+						
 						<bean id="defaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler">
 							<property name="serveIcon" value="false" />
 							<property name="showContexts" value="false" />
 						</bean>
 
-<!-- 
-						<bean class="org.eclipse.jetty.server.handler.RequestLogHandler">
-							<property name="requestLog">
-								<bean id="requestLog" class="org.eclipse.jetty.server.NCSARequestLog">
-									<property name="filename" value="./jetty.request.yyyyy_mm_dd.log" />
-									<property name="preferProxiedForAddress" value="true" />
-									<property name="logDateFormat" value="yyyy-MM-dd HH:mm:ss Z"></property>
-								</bean>
-							</property>
-						</bean>
--->
+						<!-- <bean class="org.eclipse.jetty.server.handler.RequestLogHandler"> 
+							<property name="requestLog"> <bean id="requestLog" class="org.eclipse.jetty.server.NCSARequestLog"> 
+							<property name="filename" value="./jetty.request.yyyyy_mm_dd.log" /> <property 
+							name="preferProxiedForAddress" value="true" /> <property name="logDateFormat" 
+							value="yyyy-MM-dd HH:mm:ss Z"></property> </bean> </property> </bean> -->
 					</list>
 				</property>
 			</bean>
 		</property>
 	</bean>
 
+	<bean id="ContextHandler" class="org.eclipse.jetty.servlet.ServletContextHandler">
+		<property name="contextPath" value="/" />
+		<property name="servletHandler">
+			<bean class="org.eclipse.jetty.servlet.ServletHandler">
+				<property name="servlets">
+					<list>
+						<bean class="org.eclipse.jetty.servlet.ServletHolder">
+							<property name="servlet">
+								<!-- <bean class="com.sun.jersey.spi.container.servlet.ServletContainer" 
+									/> -->
+								<bean
+									class="com.sun.jersey.spi.spring.container.servlet.SpringServlet" />
+
+							</property>
+							<property name="name" value="jersey_api" />
+							<property name="initParameters">
+								<map>
+									<entry key="com.sun.jersey.config.property.resourceConfigClass"
+										value="com.sun.jersey.api.core.PackagesResourceConfig" />
+									<entry key="com.sun.jersey.config.property.packages"
+										value="zoo.jersey.jetty.rest" />
+								</map>
+							</property>
+						</bean>
+					</list>
+				</property>
+				<property name="servletMappings">
+					<list>
+						<bean class="org.eclipse.jetty.servlet.ServletMapping">
+							<property name="pathSpec" value="/test/*" />
+							<property name="servletName" value="jersey_api" />
+						</bean>
+					</list>
+				</property>
+			</bean>
+		</property>
+		<property name="eventListeners">
+			<list>
+				<bean class="org.springframework.web.context.ContextLoaderListener" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id= "ContextHandlerInit" 
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject">
+			<ref local="ContextHandler" />
+		</property>
+		<property name="targetMethod" value="setInitParameter" />
+		<property name="arguments">
+			<list>
+				<value>contextConfigLocation</value>
+				<value>classpath:applicationContext.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- -->
 
 
 </beans>
