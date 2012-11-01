@@ -20,59 +20,52 @@
 			<bean id="handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
 				<property name="handlers">
 					<list>
-						<ref bean="contexts" />
+						<bean class="org.eclipse.jetty.servlet.ServletContextHandler">
+							<property name="contextPath" value="/" />
+							<property name="servletHandler">
+								<bean class="org.eclipse.jetty.servlet.ServletHandler">
+									<property name="servlets">
+										<list>
+											<bean class="org.eclipse.jetty.servlet.ServletHolder">
+												<property name="servlet">
+													<bean
+														class="com.sun.jersey.spi.container.servlet.ServletContainer">
+													</bean>
+												</property>
+												<property name="name" value="jersey_api" />
+												<property name="initParameters">
+													<map>
+														<entry
+															key="com.sun.jersey.config.property.resourceConfigClass"
+															value="com.sun.jersey.api.core.PackagesResourceConfig" />
+														<entry key="com.sun.jersey.config.property.packages"
+															value="zoo.jersey.jetty.rest" />
+													</map>
+												</property>
+											</bean>
+										</list>
+									</property>
+									<property name="servletMappings">
+										<list>
+											<bean class="org.eclipse.jetty.servlet.ServletMapping">
+												<property name="pathSpec" value="/test/*" />
+												<property name="servletName" value="jersey_api" />
+											</bean>
+										</list>
+									</property>
+								</bean>
+							</property>
+						</bean>
+
+						<bean id="defaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler">
+							<property name="serveIcon" value="false" />
+						</bean>
+
+						<bean class="org.eclipse.jetty.server.handler.RequestLogHandler" />
 					</list>
 				</property>
 			</bean>
 		</property>
 	</bean>
-	<bean id="contexts"
-		class="org.eclipse.jetty.server.handler.ContextHandlerCollection">
-		<property name="handlers">
-			<list>
-				<bean class="org.eclipse.jetty.servlet.ServletContextHandler">
-					<property name="contextPath" value="/" />
-					<property name="servletHandler">
-						<bean class="org.eclipse.jetty.servlet.ServletHandler">
-							<property name="servlets">
-								<list>
-									<bean class="org.eclipse.jetty.servlet.ServletHolder">
-										<property name="servlet">
-											<bean class="com.sun.jersey.spi.container.servlet.ServletContainer">
-											</bean>
-										</property>
-										<property name="name" value="jersey_api" />
-										<property name="initParameters">
-											<map>
-												<entry key="com.sun.jersey.config.property.resourceConfigClass" value="com.sun.jersey.api.core.PackagesResourceConfig"/>
-												<entry key="com.sun.jersey.config.property.packages" value="zoo.jersey.jetty.rest"/>
-											</map>
-										</property>
-									</bean>
-								</list>
-							</property>
-							<property name="servletMappings">
-								<list>
-									<bean class="org.eclipse.jetty.servlet.ServletMapping">
-										<property name="pathSpec" value="/test/*" />
-										<property name="servletName" value="jersey_api" />
-									</bean>
-								</list>
-							</property>
-						</bean>
-					</property>
-				</bean>
-				
-				<bean id="defaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler">
-					<property name="serveIcon" value="false" />
-				</bean>
-				
-				<bean class="org.eclipse.jetty.server.handler.RequestLogHandler" />
-			</list>
-		</property>
-	</bean>
-
-	<!-- com.sun.jersey.spi.container.servlet.ServletContainer -->
-	<!-- com.sun.jersey.api.core.ClasspathResourceConfig -->
 
 </beans>
