@@ -10,7 +10,9 @@ public class TestResource {
 	
 	@GET
 	@Timed
+	//@Metered
     public String get() {
         return "GET";
     }
+	//@Metered and @ExceptionMetered 
 }
