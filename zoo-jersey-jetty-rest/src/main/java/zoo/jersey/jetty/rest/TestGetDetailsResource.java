@@ -9,6 +9,8 @@ import com.yammer.metrics.annotation.Timed;
 
 //@Path("test/{id: d+}")
 @Path("/a/{id}")
+//@Path("/a/{id: [a-zA-Z][a-zA-Z_0-9]*}")
+
 @Named
 public class TestGetDetailsResource {
 	
