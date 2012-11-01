@@ -6,3 +6,8 @@ http://jersey.java.net/nonav/documentation/latest/user-guide.html
 http://docs.codehaus.org/display/JETTY/Embedding+Jetty
 
 http://stackoverflow.com/questions/10048004/integrating-jetty-with-jax-rs-jersey
+
+
+http://wiki.eclipse.org/Jetty
+http://wiki.eclipse.org/Jetty/Howto/Spring
+http://wiki.eclipse.org/Jetty/Tutorial/Embedding_Jetty
