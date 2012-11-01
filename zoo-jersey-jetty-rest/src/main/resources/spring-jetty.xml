@@ -8,22 +8,21 @@
 
 	<context:component-scan base-package="zoo.jersey.jetty" />
 
-	<bean id="Server" class="org.eclipse.jetty.server.Server"
-		init-method="start" destroy-method="stop">
+	<bean id="NioConnector" class="org.eclipse.jetty.server.nio.SelectChannelConnector">
+		<property name="port" value="8080" />
+		<property name="reuseAddress" value="false" />
+
+		<!-- DEGUG -->
+		<property name="maxIdleTime" value="3600000" />
+		<property name="soLingerTime" value="-1" />
+
+	</bean>
+	<bean id="Server" class="zoo.jersey.jetty.SpringJettyServer">
 		<property name="connectors">
 			<list>
-				<bean id="Connector" class="org.eclipse.jetty.server.nio.SelectChannelConnector">
-					<property name="port" value="8080" />
-					<property name="reuseAddress" value="false"/>
-					
-					<!-- DEGUG -->
-					<property name="maxIdleTime" value="3600000" />
-					<property name="soLingerTime" value="-1" />
-
-				</bean>
+				<ref local="NioConnector" />
 			</list>
 		</property>
-
 		<property name="handler">
 			<bean id="handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
 				<property name="handlers">
@@ -44,8 +43,9 @@
 				</property>
 			</bean>
 		</property>
-	</bean>
 
+
+	</bean>
 	<bean id="ContextHandler" class="org.eclipse.jetty.servlet.ServletContextHandler">
 		<property name="contextPath" value="/" />
 		<property name="servletHandler">
@@ -71,5 +71,4 @@
 			</bean>
 		</property>
 	</bean>
-
 </beans>

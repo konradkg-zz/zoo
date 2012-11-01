@@ -20,6 +20,8 @@ public class SpringJettyMain {
 			}
 		
 		} finally {
+			//Metrics.shutdown();
+			
 			if(applicationContext != null) {
 				applicationContext.destroy();
 			}
