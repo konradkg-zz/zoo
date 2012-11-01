@@ -14,7 +14,7 @@ import zoo.jersey.jetty.rest.beans.SimpleBean;
 
 import com.yammer.metrics.annotation.Timed;
 
-@Path("/")
+@Path("/b")
 @Named
 public class TestResource implements InitializingBean, DisposableBean {
 	private final Log logger = LogFactory.getLog(getClass()); 

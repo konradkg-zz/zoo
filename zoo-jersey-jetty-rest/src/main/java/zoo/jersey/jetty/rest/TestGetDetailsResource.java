@@ -7,7 +7,8 @@ import javax.ws.rs.PathParam;
 
 import com.yammer.metrics.annotation.Timed;
 
-@Path("/pex/{id: d+}")
+//@Path("test/{id: d+}")
+@Path("/a/{id}")
 @Named
 public class TestGetDetailsResource {
 	
