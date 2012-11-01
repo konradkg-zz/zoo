@@ -55,14 +55,6 @@
 								<bean class="zoo.jersey.jetty.rest.spring.SpringServlet" />
 							</property>
 							<property name="name" value="jersey_api" />
-							<property name="initParameters">
-								<map>
-									<entry key="com.sun.jersey.config.property.resourceConfigClass"
-										value="com.sun.jersey.api.core.PackagesResourceConfig" />
-									<entry key="com.sun.jersey.config.property.packages"
-										value="zoo.jersey.jetty.rest" />
-								</map>
-							</property>
 						</bean>
 					</list>
 				</property>
