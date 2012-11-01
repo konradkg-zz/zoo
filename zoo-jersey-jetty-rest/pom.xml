@@ -60,19 +60,13 @@
 			</exclusions>
 		</dependency>
 		
-		<!-- 
-		<dependency>
-			<groupId>com.sun.jersey.contribs</groupId>
-			<artifactId>jersey-spring</artifactId>
-			<version>1.15</version>
-		</dependency>
- -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-servlet</artifactId>
 			<version>8.1.7.v20120910</version>
 		</dependency>
 
+		<!-- not needed -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-xml</artifactId>
