@@ -59,22 +59,26 @@
 
 						<bean id="defaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler">
 							<property name="serveIcon" value="false" />
-							<property name="showContexts" value="false"/>
+							<property name="showContexts" value="false" />
 						</bean>
 
-						<bean class="org.eclipse.jetty.server.handler.RequestLogHandler" >
-							<property name="requestLog" ref="requestLog"/>
+<!-- 
+						<bean class="org.eclipse.jetty.server.handler.RequestLogHandler">
+							<property name="requestLog">
+								<bean id="requestLog" class="org.eclipse.jetty.server.NCSARequestLog">
+									<property name="filename" value="./jetty.request.yyyyy_mm_dd.log" />
+									<property name="preferProxiedForAddress" value="true" />
+									<property name="logDateFormat" value="yyyy-MM-dd HH:mm:ss Z"></property>
+								</bean>
+							</property>
 						</bean>
+-->
 					</list>
 				</property>
 			</bean>
 		</property>
 	</bean>
-	
-	<bean id="requestLog" class="org.eclipse.jetty.server.NCSARequestLog">
-		<property name="filename" value="./jetty.request.yyyyy_mm_dd.log"/>
-		<property name="preferProxiedForAddress" value="true"/>
-		<property name="logDateFormat" value="yyyy-MM-dd HH:mm:ss Z"></property>
-	</bean>
+
+
 
 </beans>
