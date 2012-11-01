@@ -14,6 +14,8 @@
 			<list>
 				<bean id="Connector" class="org.eclipse.jetty.server.nio.SelectChannelConnector">
 					<property name="port" value="8080" />
+					<property name="reuseAddress" value="false"/>
+					
 					<!-- DEGUG -->
 					<property name="maxIdleTime" value="3600000" />
 					<property name="soLingerTime" value="-1" />
