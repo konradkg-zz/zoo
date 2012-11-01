@@ -52,10 +52,6 @@
 					<list>
 						<bean class="org.eclipse.jetty.servlet.ServletHolder">
 							<property name="servlet">
-								<!-- <bean class="com.sun.jersey.spi.container.servlet.ServletContainer" 
-									/> -->
-								<!-- <bean class="com.sun.jersey.spi.spring.container.servlet.SpringServlet" 
-									/> -->
 								<bean class="zoo.jersey.jetty.rest.spring.SpringServlet" />
 							</property>
 							<property name="name" value="jersey_api" />
