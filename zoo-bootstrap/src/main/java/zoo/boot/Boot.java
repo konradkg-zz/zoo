@@ -19,9 +19,20 @@ public class Boot {
 	public static void start(String[] args) {
 		if (started.compareAndSet(false, true)) {
 			System.out.println("start");
+			/*
+			 * TODO:
+			 * 1) set classloaders
+			 * 2) find BootableService impl
+			 * 3) try start service
+			 * 	- if failed. System.exit(-1)
+			 */
+			
+			
 			Runtime.getRuntime().addShutdownHook(shutdownHook);
 			try {
 				while(latch.await(1, TimeUnit.SECONDS) == false);
+				
+				//TODO call stop service
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 				return;
