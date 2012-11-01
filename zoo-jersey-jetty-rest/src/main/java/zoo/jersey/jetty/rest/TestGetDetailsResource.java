@@ -7,14 +7,12 @@ import javax.ws.rs.PathParam;
 
 import com.yammer.metrics.annotation.Timed;
 
-//@Path("test/{id: d+}")
-@Path("/a/{id}")
-//@Path("/a/{id: [a-zA-Z][a-zA-Z_0-9]*}")
-
+@Path("/a/{id: \\d+}")
 @Named
 public class TestGetDetailsResource {
 	
 	@GET
+	//@Path("{id: \\d+}")
 	@Timed
     public String get(@PathParam("id") int id) {
         return "GET: " + id ;

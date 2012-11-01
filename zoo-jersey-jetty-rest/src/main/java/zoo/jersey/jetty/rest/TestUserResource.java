@@ -5,7 +5,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-@Path("users/{username: [a-zA-Z][a-zA-Z_0-9]}")
+@Path("/users/{username : [a-zA-Z][a-zA-Z_0-9]}")
 @Named
 public class TestUserResource {
 	
