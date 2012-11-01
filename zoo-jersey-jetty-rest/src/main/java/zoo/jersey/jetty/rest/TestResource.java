@@ -10,6 +10,7 @@ import zoo.jersey.jetty.rest.beans.SimpleBean;
 import com.yammer.metrics.annotation.Timed;
 
 @Path("/")
+@Named
 public class TestResource {
 	
 	@Inject
