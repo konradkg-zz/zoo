@@ -1,28 +1,39 @@
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection">
-    </bean>
+	<bean id="Server" class="org.eclipse.jetty.server.Server"
+		init-method="start" destroy-method="stop">
+		<property name="connectors">
+			<list>
+				<bean id="Connector" class="org.eclipse.jetty.server.nio.SelectChannelConnector">
+					<property name="port" value="8080" />
+				</bean>
+			</list>
+		</property>
 
-    <bean id="Server" class="org.eclipse.jetty.server.Server" init-method="start" destroy-method="stop">
-        <property name="connectors">
-            <list>
-                <bean id="Connector" class="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                    <property name="port" value="8080" />
-                </bean>
-            </list>
-        </property>
+		<property name="handler">
+			<bean id="handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
+				<property name="handlers">
+					<list>
+						<ref bean="contexts" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+	<bean id="contexts"
+		class="org.eclipse.jetty.server.handler.ContextHandlerCollection">
+		<property name="handlers">
+			<list>
+				<bean id="defaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler">
+					<property name="serveIcon" value="false" />
+				</bean>
+			</list>
+		</property>
 
-        <property name="handler">
-            <bean id="handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
-                <property name="handlers">
-                    <list>
-                        <ref bean="contexts" />
-                    </list>
-                </property>
-            </bean>
-        </property>
 
-    </bean>
+	</bean>
+
 
 </beans>

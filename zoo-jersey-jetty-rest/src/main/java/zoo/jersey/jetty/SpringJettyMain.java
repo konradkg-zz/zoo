@@ -12,6 +12,8 @@ public class SpringJettyMain {
 			Thread.sleep(5000);
 		}
 		
+		
+		
 		applicationContext.destroy();
 		
 	}
