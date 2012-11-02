@@ -28,7 +28,7 @@ public class SimpleCsvReader<T> {
 
 	private static int DefaultTokenSize = 255;
 
-	public void load(Path file) throws IOException {
+	public void read(Path file, FieldResultHandler<T> resultHandler) throws IOException {
 		final Path path = file.toRealPath(LinkOption.NOFOLLOW_LINKS);
 		final BasicFileAttributes fileAttributes = Files.readAttributes(path, BasicFileAttributes.class);
 		final int directBufferSize = calculateBufferSize(fileAttributes);
@@ -53,7 +53,10 @@ public class SimpleCsvReader<T> {
 						tokenBuffer.flip();
 						tokens.add(tokenBuffer.toString());
 						tokenBuffer.clear();
-						//println(tokens);
+						final T result = fieldSetMapper.mapFieldSet(new FieldSet(tokens)); 
+						if(!resultHandler.onResult(result))
+							break;
+						
 						tokens.clear();
 					} else if (c == columnDelimiter) {
 						tokenBuffer.flip();
@@ -62,7 +65,7 @@ public class SimpleCsvReader<T> {
 
 					} else {
 						if (!tokenBuffer.hasRemaining()) {
-							final CharBuffer newTokenBuffer = CharBuffer.allocate(tokenBuffer.capacity() + 2);
+							final CharBuffer newTokenBuffer = CharBuffer.allocate(tokenBuffer.capacity() + DefaultTokenSize);
 							tokenBuffer.flip();
 							tokenBuffer = newTokenBuffer.put(tokenBuffer);
 						}
@@ -105,7 +108,7 @@ public class SimpleCsvReader<T> {
 		SimpleCsvReader csvReader = new SimpleCsvReader();
 		csvReader.setEncoding("UTF-8");
 		long start = System.nanoTime();
-		csvReader.load(Paths.get("p:/Temp/h2_data/dump_lite2.csv_big"));
+		csvReader.read(Paths.get("p:/Temp/h2_data/dump_lite2.csv_big"));
 		System.out.println("Exec time: " + TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS) + " [ms].");
 	}
 }

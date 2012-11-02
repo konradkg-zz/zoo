@@ -17,25 +17,53 @@ public class FieldSet {
 	FieldSet(List<String> tokens) {
 		this.tokens = tokens;
 	}
+	
+	String token(int index) {
+		final String result = tokens.get(index);
+		return (result == null || "".equals(result)) ? null : result;
+	}
+	
+	public String readString(int index) {
+		return token(index);
+	}
 
 	public Integer readInt(int index) {
-		return Integer.valueOf(tokens.get(index));
+		final String token = token(index);
+		if(token == null)
+			return null;
+		
+		return Integer.valueOf(token);
 	}
 	
 	public Long readLong(int index) {
-		return Long.valueOf(tokens.get(index));
+		final String token = token(index);
+		if(token == null)
+			return null;
+		
+		return Long.valueOf(token);
 	}
 	
 	public BigDecimal readBigDecimal(int index) {
-		return new BigDecimal(tokens.get(index));
+		final String token = token(index);
+		if(token == null)
+			return null;
+		
+		return new BigDecimal(token);
 	}
 	
 	public Date readDate(int index) throws ParseException {
-		return DefaultDateFormat.parse(tokens.get(index));
+		final String token = token(index);
+		if(token == null)
+			return null;
+		
+		return DefaultDateFormat.parse(token);
 	}
 	
 	public Date readDateTime(int index) throws ParseException {
-		return DefaultDateTimeFormat.parse(tokens.get(index));
+		final String token = token(index);
+		if(token == null)
+			return null;
+		
+		return DefaultDateTimeFormat.parse(token);
 	}
-	
 }
