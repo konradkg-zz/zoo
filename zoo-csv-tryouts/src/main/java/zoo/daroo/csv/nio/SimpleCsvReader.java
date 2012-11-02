@@ -22,6 +22,10 @@ public class SimpleCsvReader<T> {
 	private char rowDelimiter = '\n';
 	private char columnDelimiter = ';';
 	private FieldSetMapper<T> fieldSetMapper;
+	
+	private int columns = -1;
+	private int skipped = 0;
+	
 
 	private static int KB = 1024;
 	private static int MB = 1024 * KB;
@@ -53,9 +57,20 @@ public class SimpleCsvReader<T> {
 						tokenBuffer.flip();
 						tokens.add(tokenBuffer.toString());
 						tokenBuffer.clear();
-						final T result = fieldSetMapper.mapFieldSet(new FieldSet(tokens)); 
-						if(!resultHandler.onResult(result))
-							break;
+						if(columns == -1 || tokens.size() == columns) {
+							try {
+								final T result = fieldSetMapper.mapFieldSet(new FieldSet(tokens));
+								if(!resultHandler.onResult(result))
+									break;
+								
+							} catch (Exception e) {
+								System.err.println("Failed to process row: " + tokens.toString() + ". Error: " +e.getMessage());
+								skipped++;
+							}
+						} else {
+							System.err.println("Failed to process row: " + tokens.toString() + ". Invalid columns count" + tokens.size());
+							skipped++;
+						}
 						
 						tokens.clear();
 					} else if (c == columnDelimiter) {
@@ -97,6 +112,18 @@ public class SimpleCsvReader<T> {
 	
 	public void setFieldSetMapper(FieldSetMapper<T> fieldSetMapper) {
 		this.fieldSetMapper = fieldSetMapper;
+	}
+	
+	public int getSkipped() {
+		return skipped;
+	}
+
+	public void setColumnDelimiter(char columnDelimiter) {
+		this.columnDelimiter = columnDelimiter;
+	}
+
+	public void setColumns(int columns) {
+		this.columns = columns;
 	}
 
 	//TEMP
