@@ -32,7 +32,6 @@ public class Nio2CSVReader {
 				buffer.flip();
 				final CharBuffer charBuffer = charset.decode(buffer);
 				
-				
 				//charBuffer.flip();
 				while(charBuffer.remaining() > 0) {
 					char c = charBuffer.get();
