@@ -16,11 +16,12 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class SimpleCsvReader {
+public class SimpleCsvReader<T> {
 
 	private String encoding = System.getProperty("file.encoding");
 	private char rowDelimiter = '\n';
 	private char columnDelimiter = ';';
+	private FieldSetMapper<T> fieldSetMapper;
 
 	private static int KB = 1024;
 	private static int MB = 1024 * KB;
@@ -45,6 +46,7 @@ public class SimpleCsvReader {
 
 				while (charBuffer.hasRemaining()) {
 					c = charBuffer.get();
+					//TODO: fix this
 					if(c == '\r')
 						continue;
 					if (c == rowDelimiter) {
@@ -67,7 +69,8 @@ public class SimpleCsvReader {
 						tokenBuffer.put(c);
 					}
 				}
-				buffer.compact();
+				//buffer.compact();
+				buffer.clear();
 			}
 		}
 	}
@@ -89,6 +92,10 @@ public class SimpleCsvReader {
 		this.encoding = encoding;
 	}
 	
+	public void setFieldSetMapper(FieldSetMapper<T> fieldSetMapper) {
+		this.fieldSetMapper = fieldSetMapper;
+	}
+
 	//TEMP
 	public static void println(List<String> tokens) {
 		System.out.println("size: " + tokens.size() + " " + tokens.toString());
