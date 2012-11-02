@@ -23,6 +23,10 @@ public class FieldSet {
 		return (result == null || "".equals(result)) ? null : result;
 	}
 	
+	public int size() {
+		return tokens.size();
+	}
+	
 	public String readString(int index) {
 		return token(index);
 	}

@@ -105,10 +105,27 @@ public class SimpleCsvReader<T> {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		SimpleCsvReader csvReader = new SimpleCsvReader();
+		SimpleCsvReader<List<String>> csvReader = new SimpleCsvReader<>();
 		csvReader.setEncoding("UTF-8");
+		csvReader.setFieldSetMapper(new FieldSetMapper<List<String>>() {
+			@Override
+			public List<String> mapFieldSet(FieldSet fieldSet) {
+				final List<String> result = new ArrayList<>();
+				for(int i = 0; i < fieldSet.size(); i++) {
+					result.add(fieldSet.readString(i));
+				}
+				return result;
+			}
+		});
+		
 		long start = System.nanoTime();
-		csvReader.read(Paths.get("p:/Temp/h2_data/dump_lite2.csv_big"));
+		csvReader.read(Paths.get("p:/Temp/h2_data/dump_lite2.csv_big"), new FieldResultHandler<List<String>>() {
+			@Override
+			public boolean onResult(List<String> result) {
+				println(result);
+				return true;
+			}
+		});
 		System.out.println("Exec time: " + TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS) + " [ms].");
 	}
 }
