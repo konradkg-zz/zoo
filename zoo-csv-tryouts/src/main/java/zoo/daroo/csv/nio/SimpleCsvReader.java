@@ -8,11 +8,13 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class SimpleCsvReader {
 
@@ -43,11 +45,13 @@ public class SimpleCsvReader {
 
 				while (charBuffer.hasRemaining()) {
 					c = charBuffer.get();
+					if(c == '\r')
+						continue;
 					if (c == rowDelimiter) {
 						tokenBuffer.flip();
 						tokens.add(tokenBuffer.toString());
 						tokenBuffer.clear();
-						// println(tokens);
+						//println(tokens);
 						tokens.clear();
 					} else if (c == columnDelimiter) {
 						tokenBuffer.flip();
@@ -83,5 +87,18 @@ public class SimpleCsvReader {
 
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
+	}
+	
+	//TEMP
+	public static void println(List<String> tokens) {
+		System.out.println("size: " + tokens.size() + " " + tokens.toString());
+	}
+	
+	public static void main(String[] args) throws Exception {
+		SimpleCsvReader csvReader = new SimpleCsvReader();
+		csvReader.setEncoding("UTF-8");
+		long start = System.nanoTime();
+		csvReader.load(Paths.get("p:/Temp/h2_data/dump_lite2.csv_big"));
+		System.out.println("Exec time: " + TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS) + " [ms].");
 	}
 }
