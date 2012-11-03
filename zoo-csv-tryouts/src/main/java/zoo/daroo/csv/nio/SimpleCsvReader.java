@@ -20,7 +20,7 @@ public class SimpleCsvReader<T> {
 
 	private String encoding = System.getProperty("file.encoding");
 	private char columnDelimiter = ';';
-	private FieldSetMapper<T> fieldSetMapper;
+	private FieldSetMapper<T> fieldSetMapper = new NullFieldSetMapper();
 
 	private char[] rowDelimiter = (System.getProperty("line.separator") != null)
 			? System.getProperty("line.separator").toCharArray() : "\r\n".toCharArray();
@@ -170,6 +170,13 @@ public class SimpleCsvReader<T> {
 
 			index = 0;
 			return CharacterType.NORMAL;
+		}
+	}
+	
+	private class NullFieldSetMapper implements FieldSetMapper<T> {
+		@Override
+		public T mapFieldSet(FieldSet fieldSet) {
+			return null;
 		}
 	}
 }
