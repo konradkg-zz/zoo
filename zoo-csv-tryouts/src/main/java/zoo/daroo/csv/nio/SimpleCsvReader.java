@@ -21,20 +21,19 @@ import java.util.concurrent.TimeUnit;
 public class SimpleCsvReader<T> {
 
 	private String encoding = System.getProperty("file.encoding");
-	private char rowDelimiter = '\n';
 	private char columnDelimiter = ';';
 	private FieldSetMapper<T> fieldSetMapper;
 	
-	private char[] rowDelimiters = "\r\n".toCharArray();
-	//private char[] rowDelimiters = "\n\r".toCharArray();
+	private char[] rowDelimiter = (System.getProperty("line.separator") != null) 
+			? System.getProperty("line.separator").toCharArray() : "\r\n".toCharArray();
 	
 	private int columns = -1;
 	private int skipped = 0;
 	
-
 	private static int KB = 1024;
 	private static int MB = 1024 * KB;
-
+	private static int MaxBufferSize = 50 * MB;
+	
 	private static int DefaultTokenSize = 255;
 
 	public void read(Path file, FieldResultHandler<T> resultHandler) throws IOException {
@@ -51,8 +50,8 @@ public class SimpleCsvReader<T> {
 		final CharsetDecoder charsetDecoder = charset.newDecoder()
 				.onMalformedInput(CodingErrorAction.REPLACE)
                 .onUnmappableCharacter(CodingErrorAction.REPLACE);
-		final CharactersInterpreter interpreter = new CharactersInterpreterImpl();
-		
+		final CharactersInterpreter interpreter = new DefaultCharactersInterpreter();
+		CharacterType type;
 		try (SeekableByteChannel byteChannel = Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ))) {
 			while (byteChannel.read(buffer) > 0) {
 				buffer.flip();
@@ -60,12 +59,9 @@ public class SimpleCsvReader<T> {
 
 				while (charBuffer.hasRemaining()) {
 					c = charBuffer.get();
-					//TODO: fix this
-					Char action = interpreter.interprete(tokenBuffer, c);
-//					if(c == '\r')
-//						continue;
-					//if (c == rowDelimiter) {
-					if(action.equals(Char.NEW_ROW)) {
+
+					type = interpreter.examine(tokenBuffer, c);
+					if(type.equals(CharacterType.NEW_ROW)) {
 						tokenBuffer.flip();
 						tokens.add(tokenBuffer.toString());
 						tokenBuffer.clear();
@@ -85,8 +81,7 @@ public class SimpleCsvReader<T> {
 						}
 						
 						tokens.clear();
-					//} else if (c == columnDelimiter) {
-					} else if(action.equals(Char.NEW_COLUMN)) {
+					} else if(type.equals(CharacterType.NEW_COLUMN)) {
 						tokenBuffer.flip();
 						tokens.add(tokenBuffer.toString());
 						tokenBuffer.clear();
@@ -112,7 +107,7 @@ public class SimpleCsvReader<T> {
 		if (fileSize < KB)
 			return KB;
 
-		if (fileSize < MB)
+		if (fileSize < MaxBufferSize)
 			return (int) fileSize;
 
 		return MB;
@@ -138,37 +133,41 @@ public class SimpleCsvReader<T> {
 	public void setColumns(int columns) {
 		this.columns = columns;
 	}
+	
+	public void setRowDelimiter(String rowDelimiter) {
+		this.rowDelimiter = rowDelimiter.toCharArray();
+	}
 
-	private enum Char {
+	private enum CharacterType {
 		NEW_COLUMN, NEW_ROW, NORMAL;
 	}
 	
 	private static interface CharactersInterpreter {
-		Char interprete(CharBuffer tokenBuffer, char c);
+		CharacterType examine(CharBuffer tokenBuffer, char c);
 	}
 	
-	private class CharactersInterpreterImpl implements CharactersInterpreter{
+	private class DefaultCharactersInterpreter implements CharactersInterpreter{
 		private int index = 0;
 		@Override
-		public Char interprete(CharBuffer tokenBuffer, char c) {
+		public CharacterType examine(CharBuffer tokenBuffer, char c) {
 			if (c == columnDelimiter) {
 				index = 0;
-				return Char.NEW_COLUMN;
+				return CharacterType.NEW_COLUMN;
 			}
 				
-			if(c == rowDelimiters[index]) {
-				if(index < rowDelimiters.length - 1 ) {
+			if(c == rowDelimiter[index]) {
+				if(index < rowDelimiter.length - 1 ) {
 					index++;
-					return Char.NORMAL;
+					return CharacterType.NORMAL;
 				} else {
 					tokenBuffer.position(tokenBuffer.position() - index);
 					index = 0;
-					return Char.NEW_ROW;
+					return CharacterType.NEW_ROW;
 				}
 			}
 				
 			index = 0;
-			return Char.NORMAL;
+			return CharacterType.NORMAL;
 		}
 		
 	}
