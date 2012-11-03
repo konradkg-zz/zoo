@@ -35,6 +35,7 @@ public class SimpleCsvReader<T> {
 	private static int DefaultTokenSize = 255;
 
 	public void read(Path file, FieldResultHandler<T> resultHandler) throws IOException {
+		skipped = 0;
 		final Path path = file.toRealPath(LinkOption.NOFOLLOW_LINKS);
 		final BasicFileAttributes fileAttributes = Files.readAttributes(path, BasicFileAttributes.class);
 		final int directBufferSize = calculateBufferSize(fileAttributes);
@@ -63,22 +64,8 @@ public class SimpleCsvReader<T> {
 						tokenBuffer.flip();
 						tokens.add(tokenBuffer.toString());
 						tokenBuffer.clear();
-						if (columns == -1 || tokens.size() == columns) {
-							try {
-								final T result = fieldSetMapper.mapFieldSet(new FieldSet(tokens));
-								if (!resultHandler.onResult(result))
-									break;
-
-							} catch (Exception e) {
-								System.err.println("Failed to process row: " + tokens.toString() + ". Error: "
-										+ e.getMessage());
-								skipped++;
-							}
-						} else {
-							System.err.println("Failed to process row: " + tokens.toString()
-									+ ". Invalid columns count [is=" + tokens.size() + ", should be=" + columns + "].");
-							skipped++;
-						}
+						if (handleTokens(tokens, resultHandler))
+							break;
 
 						tokens.clear();
 					} else if (type.equals(CharacterType.NEW_COLUMN)) {
@@ -99,7 +86,29 @@ public class SimpleCsvReader<T> {
 				// buffer.compact();
 				buffer.clear();
 			}
+			if (tokens.size() > 0) {
+				handleTokens(tokens, resultHandler);
+				tokens.clear();
+			}
 		}
+	}
+
+	private boolean handleTokens(List<String> tokens, FieldResultHandler<T> resultHandler) {
+		if (columns == -1 || tokens.size() == columns) {
+			try {
+				final T result = fieldSetMapper.mapFieldSet(new FieldSet(tokens));
+				return !resultHandler.onResult(result);
+			} catch (Exception e) {
+				System.err.println("Failed to process row: " + tokens.toString() + ". Error: "
+						+ e.getMessage());
+				skipped++;
+			}
+		} else {
+			System.err.println("Failed to process row: " + tokens.toString()
+					+ ". Invalid columns count [is=" + tokens.size() + ", should be=" + columns + "].");
+			skipped++;
+		}
+		return false;
 	}
 
 	private int calculateBufferSize(BasicFileAttributes fileAttributes) {
@@ -172,7 +181,7 @@ public class SimpleCsvReader<T> {
 			return CharacterType.NORMAL;
 		}
 	}
-	
+
 	private class NullFieldSetMapper implements FieldSetMapper<T> {
 		@Override
 		public T mapFieldSet(FieldSet fieldSet) {

@@ -21,6 +21,7 @@ public class SimpleCsvReaderRep {
 		csvReader.setEncoding("Cp1250");
 		csvReader.setRowDelimiter("\u2020");
 		csvReader.setColumnDelimiter('\u2021');
+		csvReader.setColumns(96);
 		csvReader.setFieldSetMapper(new FieldSetMapper<List<String>>() {
 			@Override
 			public List<String> mapFieldSet(FieldSet fieldSet) {
