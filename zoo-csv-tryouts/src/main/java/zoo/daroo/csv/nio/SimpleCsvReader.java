@@ -5,6 +5,8 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -43,10 +45,13 @@ public class SimpleCsvReader<T> {
 		CharBuffer tokenBuffer = CharBuffer.allocate(DefaultTokenSize);
 
 		char c;
+		final CharsetDecoder charsetDecoder = charset.newDecoder()
+				.onMalformedInput(CodingErrorAction.REPLACE)
+                .onUnmappableCharacter(CodingErrorAction.REPLACE);
 		try (SeekableByteChannel byteChannel = Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ))) {
 			while (byteChannel.read(buffer) > 0) {
 				buffer.flip();
-				final CharBuffer charBuffer = charset.decode(buffer);
+				final CharBuffer charBuffer  = charsetDecoder.decode(buffer);
 
 				while (charBuffer.hasRemaining()) {
 					c = charBuffer.get();
@@ -126,6 +131,7 @@ public class SimpleCsvReader<T> {
 		this.columns = columns;
 	}
 
+	//---------------------------------------------------------------------
 	//TEMP
 	public static void println(List<String> tokens) {
 		System.out.println("size: " + tokens.size() + " " + tokens.toString());
