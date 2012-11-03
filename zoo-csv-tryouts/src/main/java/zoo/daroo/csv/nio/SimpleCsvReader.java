@@ -76,7 +76,7 @@ public class SimpleCsvReader<T> {
 							}
 						} else {
 							System.err.println("Failed to process row: " + tokens.toString()
-									+ ". Invalid columns count" + tokens.size());
+									+ ". Invalid columns count [is=" + tokens.size() + ", should be=" + columns + "].");
 							skipped++;
 						}
 
