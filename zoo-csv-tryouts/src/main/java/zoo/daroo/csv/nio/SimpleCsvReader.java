@@ -25,6 +25,9 @@ public class SimpleCsvReader<T> {
 	private char columnDelimiter = ';';
 	private FieldSetMapper<T> fieldSetMapper;
 	
+	private char[] rowDelimiters = "\r\n".toCharArray();
+	//private char[] rowDelimiters = "\n\r".toCharArray();
+	
 	private int columns = -1;
 	private int skipped = 0;
 	
@@ -48,6 +51,8 @@ public class SimpleCsvReader<T> {
 		final CharsetDecoder charsetDecoder = charset.newDecoder()
 				.onMalformedInput(CodingErrorAction.REPLACE)
                 .onUnmappableCharacter(CodingErrorAction.REPLACE);
+		final CharactersInterpreter interpreter = new CharactersInterpreterImpl();
+		
 		try (SeekableByteChannel byteChannel = Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ))) {
 			while (byteChannel.read(buffer) > 0) {
 				buffer.flip();
@@ -56,9 +61,11 @@ public class SimpleCsvReader<T> {
 				while (charBuffer.hasRemaining()) {
 					c = charBuffer.get();
 					//TODO: fix this
-					if(c == '\r')
-						continue;
-					if (c == rowDelimiter) {
+					Char action = interpreter.interprete(tokenBuffer, c);
+//					if(c == '\r')
+//						continue;
+					//if (c == rowDelimiter) {
+					if(action.equals(Char.NEW_ROW)) {
 						tokenBuffer.flip();
 						tokens.add(tokenBuffer.toString());
 						tokenBuffer.clear();
@@ -78,7 +85,8 @@ public class SimpleCsvReader<T> {
 						}
 						
 						tokens.clear();
-					} else if (c == columnDelimiter) {
+					//} else if (c == columnDelimiter) {
+					} else if(action.equals(Char.NEW_COLUMN)) {
 						tokenBuffer.flip();
 						tokens.add(tokenBuffer.toString());
 						tokenBuffer.clear();
@@ -131,6 +139,40 @@ public class SimpleCsvReader<T> {
 		this.columns = columns;
 	}
 
+	private enum Char {
+		NEW_COLUMN, NEW_ROW, NORMAL;
+	}
+	
+	private static interface CharactersInterpreter {
+		Char interprete(CharBuffer tokenBuffer, char c);
+	}
+	
+	private class CharactersInterpreterImpl implements CharactersInterpreter{
+		private int index = 0;
+		@Override
+		public Char interprete(CharBuffer tokenBuffer, char c) {
+			if (c == columnDelimiter) {
+				index = 0;
+				return Char.NEW_COLUMN;
+			}
+				
+			if(c == rowDelimiters[index]) {
+				if(index < rowDelimiters.length - 1 ) {
+					index++;
+					return Char.NORMAL;
+				} else {
+					tokenBuffer.position(tokenBuffer.position() - index);
+					index = 0;
+					return Char.NEW_ROW;
+				}
+			}
+				
+			index = 0;
+			return Char.NORMAL;
+		}
+		
+	}
+	
 	//---------------------------------------------------------------------
 	//TEMP
 	public static void println(List<String> tokens) {
