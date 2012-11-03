@@ -49,7 +49,8 @@ public class SimpleCsvReader<T> {
 		final CharsetDecoder charsetDecoder = charset.newDecoder()
 				.onMalformedInput(CodingErrorAction.REPLACE)
 				.onUnmappableCharacter(CodingErrorAction.REPLACE);
-		final CharactersInterpreter interpreter = new DefaultCharactersInterpreter();
+		final CharactersInterpreter interpreter = (rowDelimiter.length > 1) 
+				? new MultiCharacterRowDelimiterInterpreter() : new SingleCharacterRowDelimiterInterpreter();
 		CharacterType type;
 		try (SeekableByteChannel byteChannel = Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ))) {
 			while (byteChannel.read(buffer) > 0) {
@@ -156,7 +157,7 @@ public class SimpleCsvReader<T> {
 		CharacterType examine(CharBuffer tokenBuffer, char c);
 	}
 
-	private class DefaultCharactersInterpreter implements CharactersInterpreter {
+	private class MultiCharacterRowDelimiterInterpreter implements CharactersInterpreter {
 		private int index = 0;
 
 		@Override
@@ -178,6 +179,21 @@ public class SimpleCsvReader<T> {
 			}
 
 			index = 0;
+			return CharacterType.NORMAL;
+		}
+	}
+	
+	private class SingleCharacterRowDelimiterInterpreter implements CharactersInterpreter {
+		@Override
+		public CharacterType examine(CharBuffer tokenBuffer, char c) {
+			if (c == columnDelimiter) {
+				return CharacterType.NEW_COLUMN;
+			}
+
+			if (c == rowDelimiter[0]) {
+				return CharacterType.NEW_ROW;
+			}
+
 			return CharacterType.NORMAL;
 		}
 	}
