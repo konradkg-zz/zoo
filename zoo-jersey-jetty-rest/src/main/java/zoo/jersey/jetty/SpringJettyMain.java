@@ -11,10 +11,15 @@ public class SpringJettyMain {
 		//System.getProperty("java.util.logging.config.file");
 		LogManager.getLogManager().readConfiguration(SpringJettyMain.class.getResourceAsStream("/logging.properties"));
 		
+		JMX jmx = new JMX();
+		
+	
+		
 		ClassPathXmlApplicationContext applicationContext = null;
 		try {
 			applicationContext = new ClassPathXmlApplicationContext("spring-jetty.xml");
-		
+			jmx.test();
+			
 			while (System.in.available() == 0) {
 				Thread.sleep(1000);
 			}
