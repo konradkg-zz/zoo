@@ -60,7 +60,7 @@ public class JMX implements NotificationListener, NotificationFilter, MetricsReg
 
 	@Override
 	public void onMetricAdded(MetricName name, Metric metric) {
-		log.info("metrics added: " + name.getMBeanName());
+		log.info("metrics added: " + name.getMBeanName() + ", name=" +name.getName() + ", type=" + name.getType() + ", scope=" + name.getScope() + ", group=" + name.getGroup());
 		try {
 			ObjectName on = new ObjectName(name.getMBeanName());
 			MBeanInfo info = platformMBeanServer.getMBeanInfo(on);
