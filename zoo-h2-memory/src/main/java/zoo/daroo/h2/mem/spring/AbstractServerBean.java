@@ -45,6 +45,7 @@ public abstract class AbstractServerBean implements InitializingBean, Disposable
 				logger.info("Stopping " + serverName + " ...");
 				server.stop();
 				logger.info("Server " + serverName + " stopped.");
+				server = null;
 			}
 		}
 	}
@@ -53,6 +54,7 @@ public abstract class AbstractServerBean implements InitializingBean, Disposable
 		if (Started.compareAndSet(false, true)) {
 			//setPort(port)
 			try {
+				server = createServer(parameters.toArray(new String[0]));
 				logger.info("[JMX] Starting " + serverName + " ...");
 				server.start();
 				logger.info("[JMX] Server " + serverName + " listening on port: " + server.getPort());
@@ -64,11 +66,12 @@ public abstract class AbstractServerBean implements InitializingBean, Disposable
 		} else if (server != null) {
 			return "Already started on port: " + server.getPort();
 		} else {
-			return "Error.";
+			return "Error. Ambiguous state.";
 		}
 	}
 	
 	public void stop() {
+		parameters.clear();
 		try {
 			destroy();
 		} catch (Exception e) {
