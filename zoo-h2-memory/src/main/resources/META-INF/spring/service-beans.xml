@@ -3,15 +3,27 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 	
+	<util:properties id="defaultProperties" local-override="false" >
+		<prop key="fileToLoad">p:/Temp/h2_data/dump_lite2.csv</prop>
+		<prop key="maxSkipCount">300</prop>
+		<prop key="delimiter">;</prop>
+		<prop key="baseDir">.</prop>
+	</util:properties>
+	<context:property-placeholder properties-ref="defaultProperties" system-properties-mode="OVERRIDE" ignore-unresolvable="true"/>
 	
 	<context:component-scan base-package="zoo.daroo.h2.mem"/>
 	
-	<!-- import resource="classpath:META-INF/spring/service-jetty-beans.xml"/-->
 	
+	
+	<!-- import resource="classpath:META-INF/spring/service-jetty-beans.xml"/-->
+<!-- 
 	<bean id="defaultProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="properties">
 			<value>
@@ -24,8 +36,7 @@
 		<property name="ignoreUnresolvablePlaceholders" value="true" />
 		<property name="systemPropertiesMode" value="2" />
 	</bean>
-	
-	
+ -->	
 	<bean id="JdbcConnectionPoolBean" class="zoo.daroo.h2.mem.spring.JdbcConnectionPoolBean"/>
 	
 	<bean id="InternalDbManager" class="zoo.daroo.h2.mem.InternalDbManager">
