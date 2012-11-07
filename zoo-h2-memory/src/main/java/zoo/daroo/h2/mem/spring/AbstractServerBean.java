@@ -53,6 +53,7 @@ public abstract class AbstractServerBean implements InitializingBean, Disposable
 	public String start(int port) {
 		if (Started.compareAndSet(false, true)) {
 			//setPort(port)
+			//setAllowOther
 			try {
 				server = createServer(parameters.toArray(new String[0]));
 				logger.info("[JMX] Starting " + serverName + " ...");
