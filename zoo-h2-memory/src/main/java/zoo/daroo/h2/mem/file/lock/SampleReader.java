@@ -14,7 +14,6 @@ public class SampleReader {
 				System.out.println("got lock: " + lock);
 			}
 		}
-
 	}
 
 }
