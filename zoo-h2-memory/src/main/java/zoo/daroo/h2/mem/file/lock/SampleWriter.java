@@ -6,7 +6,8 @@ import java.nio.file.Paths;
 
 public class SampleWriter {
 	
-	public static Path file = Paths.get("p:/temp/sample.file");
+	//public static Path file = Paths.get("p:/temp/sample.file");
+	public static Path file = Paths.get("//htpc/Share/sample.file");
 	
 	public static void main(String[] args) throws Exception {
 		
