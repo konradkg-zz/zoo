@@ -22,7 +22,7 @@ public class SampleReader {
 		System.out.println("writable: " + Files.isWritable(SampleWriter.file));
 		
 		long start = System.nanoTime();
-		//Almost ok, but writter will get: The process cannot access the file because another process has locked a portion of the file
+		//Almost ok, but writer will get: IOException The process cannot access the file because another process has locked a portion of the file
 		Files.move(SampleWriter.file, SampleWriter.file, StandardCopyOption.ATOMIC_MOVE);
 		System.out.println("Move took: " + TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS));
 	}
