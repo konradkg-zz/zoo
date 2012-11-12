@@ -2,7 +2,6 @@ package zoo.daroo.h2.mem.file.lock;
 
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
@@ -25,6 +24,9 @@ public class SampleReader {
 		//Almost ok, but writer will get: IOException The process cannot access the file because another process has locked a portion of the file
 		Files.move(SampleWriter.file, SampleWriter.file, StandardCopyOption.ATOMIC_MOVE);
 		System.out.println("Move took: " + TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS));
+		
+		
+		//onModify should return BasicFileAttributes or get this just after onModify (what if something more was appended to the file just after copy)?
 	}
 
 }
