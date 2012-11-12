@@ -8,7 +8,7 @@ public class SampleReader {
 
 	public static void main(String[] args) throws Exception {
 
-		try (FileChannel channel = FileChannel.open(SampleWriter.file, StandardOpenOption.READ, StandardOpenOption.WRITE);
+		try (FileChannel channel = FileChannel.open(SampleWriter.file, StandardOpenOption.READ);
 				FileLock lock = channel.tryLock(0L, Long.MAX_VALUE, true)) {
 			if (lock != null) {
 				System.out.println("got lock: " + lock);
