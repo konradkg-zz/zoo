@@ -5,6 +5,13 @@
 	<artifactId>zoo-htmlunit</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
+	<dependencies>
+		<dependency>
+			<groupId>net.sourceforge.htmlunit</groupId>
+			<artifactId>htmlunit</artifactId>
+			<version>2.11</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>
