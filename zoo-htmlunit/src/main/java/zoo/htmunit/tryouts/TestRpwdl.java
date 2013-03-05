@@ -47,6 +47,7 @@ public class TestRpwdl {
 			AtomicInteger currentPageId = new AtomicInteger(0);
 			while(currentPage != null) {
 				currentPage = drukuj(currentPage, currentPageId);
+				//webClient.getCookieManager().getCookies().toArray()[0];
 			}
 			
 //			List<HtmlAnchor> htmlAnchorList = result.getAnchors();
@@ -71,6 +72,7 @@ public class TestRpwdl {
 	
 	public static HtmlPage drukuj(HtmlPage page, AtomicInteger currentPageId) throws Exception {
 		List<HtmlAnchor> htmlAnchorList = page.getAnchors();
+		
 		
 		boolean isFirst = true;
 		for (HtmlAnchor ha : htmlAnchorList) {
