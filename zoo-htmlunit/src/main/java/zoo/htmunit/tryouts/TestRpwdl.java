@@ -48,6 +48,7 @@ public class TestRpwdl {
 			while(currentPage != null) {
 				currentPage = drukuj(currentPage, currentPageId);
 				//webClient.getCookieManager().getCookies().toArray()[0];
+				currentPage = null;
 			}
 			
 //			List<HtmlAnchor> htmlAnchorList = result.getAnchors();
@@ -65,6 +66,10 @@ public class TestRpwdl {
 			//page.cleanUp();
 			//page.cleanUp();
 			//page.refresh();
+			
+			
+			//hmmm... test this
+			webClient.getCookieManager().clearCookies();
 		}
 		
 		// forms.toString();
