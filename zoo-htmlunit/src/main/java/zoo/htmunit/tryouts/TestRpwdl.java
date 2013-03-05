@@ -1,6 +1,7 @@
 package zoo.htmunit.tryouts;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
@@ -42,24 +43,61 @@ public class TestRpwdl {
 			// System.out.println(result.asXml());
 			// final List<HtmlForm> forms = page.getForms();
 
-			List<HtmlAnchor> htmlAnchorList = result.getAnchors();
-			for (HtmlAnchor ha : htmlAnchorList) {
-				// System.out.println(ha.getTextContent());
-				if (ha.getTextContent().equalsIgnoreCase("Drukuj")) {
-					Page haPage = ha.openLinkInNewWindow();
-					// System.out.println(haPage.getWebResponse().getContentAsString());
-					System.out.println(((HtmlPage) haPage).asText());
-
-					break;
-				}
+			HtmlPage currentPage = result;
+			AtomicInteger currentPageId = new AtomicInteger(0);
+			while(currentPage != null) {
+				currentPage = drukuj(currentPage, currentPageId);
 			}
 			
+//			List<HtmlAnchor> htmlAnchorList = result.getAnchors();
+//			
+//			for (HtmlAnchor ha : htmlAnchorList) {
+//				// System.out.println(ha.getTextContent());
+//				if (ha.getTextContent().equalsIgnoreCase("Drukuj")) {
+//					Page haPage = ha.openLinkInNewWindow();
+//					// System.out.println(haPage.getWebResponse().getContentAsString());
+//					System.out.println(((HtmlPage) haPage).asText());
+//					break;
+//				}
+//			}
+			
 			//page.cleanUp();
-			page.cleanUp();
-			page.refresh();
+			//page.cleanUp();
+			//page.refresh();
 		}
 		
 		// forms.toString();
+	}
+	
+	public static HtmlPage drukuj(HtmlPage page, AtomicInteger currentPageId) throws Exception {
+		List<HtmlAnchor> htmlAnchorList = page.getAnchors();
+		
+		boolean isFirst = true;
+		for (HtmlAnchor ha : htmlAnchorList) {
+			// System.out.println(ha.getTextContent());
+			String content = ha.getTextContent();
+			Integer pageId = getAsDigit(content);
+			if (isFirst && content.equalsIgnoreCase("Drukuj")) {
+				Page haPage = ha.openLinkInNewWindow();
+				// System.out.println(haPage.getWebResponse().getContentAsString());
+				System.out.println(((HtmlPage) haPage).asText());
+				isFirst = false;
+			} else if(pageId != null && pageId > currentPageId.get()) {
+				System.out.println(pageId);
+				currentPageId.set(pageId);
+				return ha.click();
+			}
+		}
+		
+		return null;
+	}
+	
+	public static Integer getAsDigit(String s) {
+		try {
+			return Integer.valueOf(s);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 }
