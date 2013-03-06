@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.Page;
+import com.gargoylesoftware.htmlunit.ProxyConfig;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlOption;
@@ -17,6 +18,10 @@ public class TestRpwdl {
 	public static void main(String[] args) throws Exception {
 
 		final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_10);
+		
+		//privoxy
+		webClient.getOptions().setProxyConfig(new ProxyConfig("127.0.0.1", 8118));
+		
 		webClient.getOptions().setCssEnabled(false);
 		webClient.getOptions().setHomePage("http://rpwdl.csioz.gov.pl/");
 		webClient.getOptions().setThrowExceptionOnScriptError(false);
@@ -69,10 +74,12 @@ public class TestRpwdl {
 			
 			
 			//hmmm... test this
-			webClient.getCookieManager().clearCookies();
+			//webClient.getCookieManager().clearCookies();
 		}
 		
 		// forms.toString();
+		
+		webClient.closeAllWindows();
 	}
 	
 	public static HtmlPage drukuj(HtmlPage page, AtomicInteger currentPageId) throws Exception {
