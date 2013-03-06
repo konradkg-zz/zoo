@@ -53,7 +53,7 @@ public class TestRpwdl {
 			while(currentPage != null) {
 				currentPage = drukuj(currentPage, currentPageId);
 				//webClient.getCookieManager().getCookies().toArray()[0];
-				currentPage = null;
+				//currentPage = null;
 			}
 			
 //			List<HtmlAnchor> htmlAnchorList = result.getAnchors();
