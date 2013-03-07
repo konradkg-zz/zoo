@@ -9,10 +9,10 @@ import java.io.InputStreamReader;
 import javax.imageio.ImageIO;
 
 public class OCR {
-    private static final String INPUT = "C:/captcha/ex.png";
-    private static final String OUTPUT = "C:/captcha/captcha-out.png";
-    private static final String TESSERACT_BIN = "C:/Program Files/Tesseract-OCR/tesseract.exe";
-    private static final String TESSERACT_OUTPUT = "C:/captcha/out.txt";
+    private static final String INPUT = "d:/Temp/Tesseract-OCR/temp/captcha.png";
+    private static final String OUTPUT = "d:/Temp/Tesseract-OCR/temp/captcha-out.png";
+    private static final String TESSERACT_BIN = "d:/Temp/Tesseract-OCR/tesseract.exe";
+    private static final String TESSERACT_OUTPUT = "d:/Temp/Tesseract-OCR/temp/captcha-out";
     private static final int WHITE = 0x00FFFFFF, BLACK = 0x00000000;
 
     public static void main(String... args) throws Exception {
@@ -48,7 +48,7 @@ public class OCR {
 
 	ImageIO.write(image, "png", new File(OUTPUT));
 	Process tesseractProc = Runtime.getRuntime().exec(
-	        TESSERACT_BIN + " " + OUTPUT + " " + TESSERACT_OUTPUT + " nobatch letters");
+	        TESSERACT_BIN + " " + OUTPUT + " " + TESSERACT_OUTPUT + " nobatch");
 	tesseractProc.waitFor();
 	BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(TESSERACT_OUTPUT
 	        + ".txt")));
