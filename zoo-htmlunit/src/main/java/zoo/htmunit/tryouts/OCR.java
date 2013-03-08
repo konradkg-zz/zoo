@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import javax.imageio.ImageIO;
 
 public class OCR {
-    private static final String INPUT = "d:/Temp/Tesseract-OCR/temp/captcha.png";
+    private static final String INPUT = "d:/Temp/Tesseract-OCR/temp/captcha2.png";
     private static final String OUTPUT = "d:/Temp/Tesseract-OCR/temp/captcha-out.png";
     private static final String TESSERACT_BIN = "d:/Temp/Tesseract-OCR/tesseract.exe";
     private static final String TESSERACT_OUTPUT = "d:/Temp/Tesseract-OCR/temp/captcha-out";
