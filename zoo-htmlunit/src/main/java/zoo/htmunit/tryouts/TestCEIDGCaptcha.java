@@ -41,6 +41,7 @@ public class TestCEIDGCaptcha {
     
     
     public static void main(String[] args) throws Exception {
+	
 	List<File> files = downoladFiles();
 	List<File> postFiles = doImageMagic(files);
 	List<File> ocrResultFiles = doOCR(postFiles);
