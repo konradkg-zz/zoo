@@ -1,12 +1,21 @@
 package zoo.htmunit.tryouts;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.HttpMethod;
@@ -26,10 +35,20 @@ public class TestCEIDGCaptcha {
     private final static String IM_OPTS = "-background white -contrast-stretch 500 -resize 75% -resize 300%  -fuzz 10% -fill white -opaque grey " +
     		"-opaque grey49 -opaque grey55 -resize 50% -resize 300% -colors 6 -resize 30%";
     
+    private final static String TESS_EXEC = "d:/Temp/Tesseract-OCR/tesseract.exe";
+    private final static String TESS_OPTS = "-psm 7 CEIDG";
+    
+    
     
     public static void main(String[] args) throws Exception {
 	List<File> files = downoladFiles();
-	doImageMagic(files);
+	List<File> postFiles = doImageMagic(files);
+	List<File> ocrResultFiles = doOCR(postFiles);
+	printResults(ocrResultFiles);
+	List<Map<Character, AtomicInteger>> stats = getOcrResults(ocrResultFiles);
+	
+	String bestMatch = findBestMatch(stats);
+	System.out.println("\n\nBestMatch: " + bestMatch);
     }
     
     private static List<File> downoladFiles() throws Exception{
@@ -51,7 +70,7 @@ public class TestCEIDGCaptcha {
 	String sourceUrl = image.getSrcAttribute();
 	URL sourceUrlFull = page.getFullyQualifiedUrl(sourceUrl);
 	List<File> result = new ArrayList<>();
-	for(int i = 0; i < 10; i++) {
+	for(int i = 0; i < 15; i++) {
 	    WebResponse resp = webClient.getWebConnection().getResponse(new WebRequest(sourceUrlFull, HttpMethod.GET));
 	    File f = new File("d:/Temp/captcha/CEIDG/" + sourceUrl.substring(16, 52) + "-" + i +".jpg");
 	    IOUtils.copy(resp.getContentAsStream(), new FileOutputStream(f));
@@ -74,6 +93,126 @@ public class TestCEIDGCaptcha {
 	}
 	
 	return result;
+    }
+    
+    private static List<File> doOCR(List<File> src) throws Exception{
+	List<File> result = new ArrayList<>();
+	for(File in : src) {
+	    File out = new File(in.getAbsolutePath().replace(".jpg", ""));
+	    Process imProc = Runtime.getRuntime().exec(TESS_EXEC + " " + in.getAbsolutePath() + " " + out.getAbsolutePath() + " " + TESS_OPTS);
+	    imProc.waitFor();
+	    result.add(new File(out.getAbsolutePath() + ".txt"));
+	}
+	return result;
+    }
+    
+    private static void printResults(List<File> src) throws Exception {
+	for(File in : src) {
+	    List<String> lines = IOUtils.readLines(new FileInputStream(in));
+	    if(lines != null && lines.size() > 0) {
+		System.out.println(in.getAbsolutePath() + ": " + lines.get(0));
+	    } else {
+		System.out.println(in.getAbsolutePath() + ": " + "<empty>");
+	    }
+	}
+    }
+    
+    private static List<Map<Character, AtomicInteger>> getOcrResults(List<File> src) throws Exception {
+	List<Map<Character, AtomicInteger>> stats = new ArrayList<>();
+	
+	for(File in : src) {
+	    List<String> lines = IOUtils.readLines(new FileInputStream(in));
+	    if(lines == null || lines.size() == 0)
+		continue;
+		
+	    String cleanResult = StringUtils.deleteWhitespace(lines.get(0));
+	    if(cleanResult == null || cleanResult.length() != 5)
+		continue;
+	    
+	    char[] characters = cleanResult.toCharArray();
+	    for(int i = 0; i < characters.length; i++) {
+		if(stats.size() < i + 1) {
+		    stats.add(new HashMap<Character, AtomicInteger>());
+		}
+		Map<Character, AtomicInteger> statsSet = stats.get(i);
+		AtomicInteger counter = statsSet.get(characters[i]);
+		if(counter == null) {
+		    counter = new AtomicInteger();
+		    statsSet.put(characters[i], counter);
+		}
+		counter.incrementAndGet();
+	    }
+	}
+	
+	return stats;
+    }
+    
+    private static String findBestMatch(List<Map<Character, AtomicInteger>> stats) {
+	StringBuilder result = new StringBuilder();
+	for(Map<Character, AtomicInteger> characterStat : stats) {
+	    Set<Entry<Character, AtomicInteger>> entries = characterStat.entrySet();
+	    
+	    Entry<Character, AtomicInteger> bestEntry = null;
+	    for(Entry<Character, AtomicInteger> entry : entries) {
+		if(bestEntry == null) {
+		    bestEntry = entry;
+		    continue;
+		}
+		if(bestEntry.getValue().get() < entry.getValue().get()) {
+		    bestEntry = entry;
+		}
+	    }
+	    
+	    if(bestEntry == null) {
+		result.append("?");
+	    } else {
+		result.append(bestEntry.getKey());
+	    }
+	}
+	
+	return result.toString();
+    }
+    
+    
+    private static class CharacterStats {
+	final char ch;
+	int counter;
+	
+	CharacterStats (char ch) {
+	    this.ch = ch;
+	}
+	
+	void inc() {
+	    counter++;
+	}
+	
+	@Override
+        public int hashCode() {
+	    final int prime = 31;
+	    int result = 1;
+	    result = prime * result + ch;
+	    return result;
+        }
+	@Override
+        public boolean equals(Object obj) {
+	    if (this == obj)
+	        return true;
+	    if (obj == null)
+	        return false;
+	    if (getClass() != obj.getClass())
+	        return false;
+	    CharacterStats other = (CharacterStats) obj;
+	    if (ch != other.ch)
+	        return false;
+	    return true;
+        }
+    }
+    
+    private static class OCRResult {
+	String resultStr;
+	public OCRResult(List<String> fileResult) {
+	    this.resultStr = StringUtils.deleteWhitespace(fileResult.get(0));
+	}
     }
  
 }
