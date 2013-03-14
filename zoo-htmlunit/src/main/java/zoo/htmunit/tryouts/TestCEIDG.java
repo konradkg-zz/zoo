@@ -16,6 +16,10 @@ public class TestCEIDG {
     
     public final static String TEST_ASSERT_STR = "SIEPRAWSKA";
     
+    //CONST link, no captcha, no session
+    //https://prod.ceidg.gov.pl/CEIDG/ceidg.public.ui/SearchDetails.aspx?Id=fdb9d537-89c3-43bd-878b-2a8cbf70d39d
+    
+    
     public static void main(String[] args) throws Exception {
 	
 	String result = null;
