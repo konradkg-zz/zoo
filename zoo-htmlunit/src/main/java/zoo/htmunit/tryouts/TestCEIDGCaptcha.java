@@ -6,12 +6,10 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
@@ -173,47 +171,4 @@ public class TestCEIDGCaptcha {
 	
 	return result.toString();
     }
-    
-    
-    private static class CharacterStats {
-	final char ch;
-	int counter;
-	
-	CharacterStats (char ch) {
-	    this.ch = ch;
-	}
-	
-	void inc() {
-	    counter++;
-	}
-	
-	@Override
-        public int hashCode() {
-	    final int prime = 31;
-	    int result = 1;
-	    result = prime * result + ch;
-	    return result;
-        }
-	@Override
-        public boolean equals(Object obj) {
-	    if (this == obj)
-	        return true;
-	    if (obj == null)
-	        return false;
-	    if (getClass() != obj.getClass())
-	        return false;
-	    CharacterStats other = (CharacterStats) obj;
-	    if (ch != other.ch)
-	        return false;
-	    return true;
-        }
-    }
-    
-    private static class OCRResult {
-	String resultStr;
-	public OCRResult(List<String> fileResult) {
-	    this.resultStr = StringUtils.deleteWhitespace(fileResult.get(0));
-	}
-    }
- 
 }
