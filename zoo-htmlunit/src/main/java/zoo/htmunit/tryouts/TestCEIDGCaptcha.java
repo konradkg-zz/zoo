@@ -30,8 +30,10 @@ public class TestCEIDGCaptcha {
     private final static String CEIDG_URL = "https://prod.ceidg.gov.pl/CEIDG/ceidg.public.ui/";
     
     private final static String IM_EXEC = "d:/Temp/captcha/ImageMagick-6.8.3-9/convert.exe";
-    private final static String IM_OPTS = "-background white -contrast-stretch 500 -resize 75% -resize 300%  -fuzz 10% -fill white -opaque grey " +
-    		"-opaque grey49 -opaque grey55 -resize 50% -resize 300% -colors 6 -resize 30%";
+//    private final static String IM_OPTS = "-background white -contrast-stretch 500 -resize 75%% -resize 300%% -fuzz 10%% " +
+//    		"-fill white -opaque grey -opaque grey49 -opaque grey55 -resize 50%% -resize 300%% -colors 7 -sharpen 1x1  -resize 30%%";
+//    
+    private final static String IM_OPTS = "-morphology Open Corners -fuzz 10%% -fill white -opaque grey -opaque grey90";
     
     private final static String TESS_EXEC = "d:/Temp/Tesseract-OCR/tesseract.exe";
     private final static String TESS_OPTS = "-psm 7 CEIDG";
