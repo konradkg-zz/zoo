@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.gargoylesoftware.htmlunit.AjaxController;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
@@ -69,26 +71,49 @@ public class TestCEIDGCaptcha {
 	int replaced = 0;
 	int aaaaa = 0;
 	long start = System.nanoTime();
+	final AtomicInteger loopFinal = new AtomicInteger(0);
+	
 	for (int i = 1; i <= loop; i++) {
+	    final AtomicInteger stepFinal = new AtomicInteger(1);
+	    loopFinal.incrementAndGet();
+		
 	    final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_10);
 	    webClient.getOptions().setProxyConfig(new ProxyConfig("127.0.0.1", 8118));
 	    webClient.getOptions().setCssEnabled(false);
 	    webClient.getOptions().setThrowExceptionOnScriptError(false);
 	    webClient.setAjaxController(new NicelyResynchronizingAjaxController());
-
+//	    webClient.setAjaxController(new AjaxController(){
+//		    @Override
+//		    public boolean processSynchron(HtmlPage page, WebRequest request, boolean async)
+//		    {
+//			String xml = page.asXml();
+//			try {
+//	                    IOUtils.write(xml, new FileOutputStream(new File("d:/Temp/captcha/CEIDG/ajax-" 
+//	                    	+ loopFinal.get() + "-" + stepFinal.getAndIncrement() + ".html")), 
+//	                    	Charset.forName("UTF-8"));
+//                        } catch (Exception e) {	                 
+//	                    e.printStackTrace();
+//                        } 
+//		        return true;
+//		    }
+//		});
+	    
 	    final HtmlPage page = webClient.getPage(CEIDG_URL + "Search.aspx");
+//	    IOUtils.write(page.asXml(), new FileOutputStream(new File("d:/Temp/captcha/CEIDG/ajax-" 
+//                	+ loopFinal.get() + "-main.html")), 
+//                	Charset.forName("UTF-8"));
 
 	    HtmlImage image = page.getHtmlElementById("MainContent_ctrlCaptcha");
 	    String sourceUrl = image.getSrcAttribute();
 	    URL sourceUrlFull = page.getFullyQualifiedUrl(sourceUrl);
 
-	    List<File> files = downoladFiles1(sourceUrlFull, sourceUrl);
+	    List<File> files = downoladFiles1(sourceUrlFull, sourceUrl, webClient);
 	    List<File> postFiles = doImageMagic(files);
 	    List<File> ocrResultFiles = doOCR(postFiles);
 	    List<Map<Character, AtomicInteger>> stats = getOcrResults(ocrResultFiles);
 	    String bestMatch = findBestMatch(stats);
 
-	    System.out.println("\n\nBestMatch (" + i  +"): " + bestMatch + " for file: " + sourceUrl);
+	    System.out.println("BestMatch (" + i  +"): " + bestMatch + " for file: " + sourceUrl);
 
 	    if(bestMatch != null && CAPTCHA.equals(bestMatch)) {
 		aaaaa++;
@@ -99,21 +124,29 @@ public class TestCEIDGCaptcha {
 		replaced++;
 	    }
 	    
-	    
-		
 	    HtmlInput regonInput = page.getHtmlElementById("MainContent_txtRegon");
 	    regonInput.setValueAttribute(TEST_REGON);
 
 	    HtmlInput captchaInput = page.getHtmlElementById("MainContent_tbCaptcha");
 	    captchaInput.setValueAttribute(bestMatch);
+//	    IOUtils.write(page.asXml(), new FileOutputStream(new File("d:/Temp/captcha/CEIDG/ajax-" 
+//            	+ loopFinal.get() + "-main-before-click.html")), 
+//            	Charset.forName("UTF-8"));
 
 	    HtmlInput searchInput = page.getHtmlElementById("MainContent_btnInputSearch");
 	    HtmlPage result = searchInput.click();
-
+	    
 	    String resultText = result.asText();
+	    String xml = result.asXml();
+	    File f = null;
 	    if (resultText.contains(TEST_ASSERT_STR)) {
 		found++;
+		f = new File("d:/Temp/captcha/CEIDG/" + sourceUrl.substring(16, 52) + "-found" + ".html");
+	    } else {
+		f = new File("d:/Temp/captcha/CEIDG/" + sourceUrl.substring(16, 52) + "-not-found" + ".html");
 	    }
+	    
+	    IOUtils.write(xml, new FileOutputStream(f), Charset.forName("UTF-8"));
 
 	    webClient.closeAllWindows();
 	}
@@ -153,21 +186,22 @@ public class TestCEIDGCaptcha {
 
 	webClient.closeAllWindows();
 
-	return downoladFiles1(sourceUrlFull, sourceUrl);
+	return downoladFiles1(sourceUrlFull, sourceUrl, null);
     }
 
-    public static List<File> downoladFiles1(URL sourceUrlFull, String sourceUrl) throws Exception {
+    public static List<File> downoladFiles1(URL sourceUrlFull, String sourceUrl, WebClient webClientParent) throws Exception {
 	List<File> result = new ArrayList<>();
-	final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_10);
+	final WebClient webClient = (webClientParent != null) ? webClientParent :  new WebClient(BrowserVersion.FIREFOX_10);
 
-	// privoxy
-	webClient.getOptions().setProxyConfig(new ProxyConfig("127.0.0.1", 8118));
-	webClient.getOptions().setCssEnabled(false);
-	webClient.getOptions().setThrowExceptionOnScriptError(false);
-	webClient.getOptions().setJavaScriptEnabled(false);
+	if(webClientParent == null) {
+	    // privoxy
+	    webClient.getOptions().setProxyConfig(new ProxyConfig("127.0.0.1", 8118));
+	    webClient.getOptions().setCssEnabled(false);
+	    webClient.getOptions().setThrowExceptionOnScriptError(false);
+	//webClient.getOptions().setJavaScriptEnabled(false);
 	// webClient.setAjaxController(new
 	// NicelyResynchronizingAjaxController());
-
+	}
 	for (int i = 0; i < 15; i++) {
 	    WebResponse resp = webClient.getWebConnection().getResponse(
 		    new WebRequest(sourceUrlFull, HttpMethod.GET));
@@ -176,7 +210,9 @@ public class TestCEIDGCaptcha {
 	    result.add(f);
 	}
 
-	webClient.closeAllWindows();
+	if(webClientParent == null) {
+	    webClient.closeAllWindows();
+	}
 	return result;
     }
 
