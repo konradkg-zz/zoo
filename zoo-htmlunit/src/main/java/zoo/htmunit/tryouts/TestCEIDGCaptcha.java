@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
@@ -63,10 +64,11 @@ public class TestCEIDGCaptcha {
     }
 
     public static void testAccuracy() throws Exception {
-	int loop = 10;
+	int loop = 50;
 	int found = 0;
 	int replaced = 0;
 	int aaaaa = 0;
+	long start = System.nanoTime();
 	for (int i = 1; i <= loop; i++) {
 	    final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_10);
 	    webClient.getOptions().setProxyConfig(new ProxyConfig("127.0.0.1", 8118));
@@ -116,9 +118,10 @@ public class TestCEIDGCaptcha {
 	    webClient.closeAllWindows();
 	}
 	
+	long stop = System.nanoTime();
 	
 	System.out.println("found: " + found + " loop: " + loop + " replaced: " + replaced + " aaaaa:" + aaaaa);
-	
+	System.out.println("Done in: " + TimeUnit.MILLISECONDS.convert(stop - start, TimeUnit.NANOSECONDS) + "ms");
 	
     }
 
