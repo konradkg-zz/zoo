@@ -66,22 +66,24 @@ public class TestCEIDGCaptcha {
     }
 
     public static void testAccuracy() throws Exception {
-	int loop = 50;
+	int loop = 5;
 	int found = 0;
 	int replaced = 0;
 	int aaaaa = 0;
 	long start = System.nanoTime();
 	final AtomicInteger loopFinal = new AtomicInteger(0);
 	
-	for (int i = 1; i <= loop; i++) {
-	    final AtomicInteger stepFinal = new AtomicInteger(1);
-	    loopFinal.incrementAndGet();
-		
-	    final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_10);
+	final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_10);
 	    webClient.getOptions().setProxyConfig(new ProxyConfig("127.0.0.1", 8118));
 	    webClient.getOptions().setCssEnabled(false);
 	    webClient.getOptions().setThrowExceptionOnScriptError(false);
 	    webClient.setAjaxController(new NicelyResynchronizingAjaxController());
+	    
+	for (int i = 1; i <= loop; i++) {
+	    final AtomicInteger stepFinal = new AtomicInteger(1);
+	    loopFinal.incrementAndGet();
+		
+	    
 //	    webClient.setAjaxController(new AjaxController(){
 //		    @Override
 //		    public boolean processSynchron(HtmlPage page, WebRequest request, boolean async)
@@ -148,8 +150,9 @@ public class TestCEIDGCaptcha {
 	    
 	    IOUtils.write(xml, new FileOutputStream(f), Charset.forName("UTF-8"));
 
-	    webClient.closeAllWindows();
+	    
 	}
+	webClient.closeAllWindows();
 	
 	long stop = System.nanoTime();
 	
