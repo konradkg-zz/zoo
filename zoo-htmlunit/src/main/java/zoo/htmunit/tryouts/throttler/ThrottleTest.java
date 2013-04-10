@@ -13,12 +13,14 @@ public class ThrottleTest {
 	static long TIME_OFFSET = System.nanoTime();
 
 	public static void main(String[] args) {
-		final int m = 2;
+		final int m = 12;
 		final TimeUnit unit = TimeUnit.SECONDS;
-		final int n = 10; // [s]
+		final int n = 60; // [s]
 		final long nNano = unit.toNanos(n);
+		//final long nNano = unit.toNanos(n)/m;
 
 		final CircularFifoBuffer fifoBuffer = new CircularFifoBuffer(m);
+		//final CircularFifoBuffer fifoBuffer = new CircularFifoBuffer(1); //replace with atomicref. compareandset
 
 		while (true) {
 			Long oldestEntry = (fifoBuffer.isEmpty()) ? null : (Long) fifoBuffer.get();
