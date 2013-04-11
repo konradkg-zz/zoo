@@ -34,7 +34,7 @@ public class TestCEIDG {
     }
     
     public static String search() throws Exception {
-	final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_10);
+	final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_17);
 	
 	//privoxy
 	//webClient.getOptions().setProxyConfig(new ProxyConfig("127.0.0.1", 8118));

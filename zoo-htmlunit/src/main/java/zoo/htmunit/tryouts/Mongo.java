@@ -1,6 +1,7 @@
 package zoo.htmunit.tryouts;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -15,6 +16,17 @@ import com.mongodb.QueryOperators;
 public class Mongo {
 	
 	public static void main(String[] args) {
+		
+		long t = TimeUnit.MINUTES.convert(1, TimeUnit.DAYS);
+		System.out.println(t);
+		t = t * 3;
+		System.out.println(t);
+		
+		//int x = 2800000;
+		int x = 284000;
+		
+		System.out.println(x/t);
+		
 		
 		Query q = new Query();
 		//q.
