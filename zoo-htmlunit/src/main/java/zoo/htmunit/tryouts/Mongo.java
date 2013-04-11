@@ -27,8 +27,8 @@ public class Mongo {
 		Criteria array2 = new Criteria("array");
 		array2.elemMatch(new Criteria("_id").is("999aaa666").and("status").is("queued").and("timestamp").gt(new Date()));
 		
-		Criteria array3 = new Criteria("array");
-		array3.elemMatch(new Criteria("_id").nin("999aaa666"));
+		Criteria array3 = new Criteria("array._id");
+		array3.nin("999aaa666");
 		
 		
 		Criteria or = new Criteria();
