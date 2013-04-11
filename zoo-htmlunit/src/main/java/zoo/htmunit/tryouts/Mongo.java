@@ -19,7 +19,7 @@ public class Mongo {
 		Query q = new Query();
 		//q.
 		Criteria is_blacklisted = new Criteria("is_blacklisted");
-		is_blacklisted.nin(false);
+		is_blacklisted.nin(true);
 		
 		Criteria array1 = new Criteria("array");
 		array1.elemMatch(new Criteria("_id").is("999aaa666").and("status").nin("ok", "blacklisted"));
