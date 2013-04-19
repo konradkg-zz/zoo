@@ -48,24 +48,24 @@ public class LockTest {
 		int count = 0;
 		try {
 			while (true) {
-				while (masterLock.tryLock(1, TimeUnit.SECONDS)) {
+				if (masterLock.tryLock(1, TimeUnit.SECONDS) == false)
+					continue;
 
-					try {
-						doStart();
-						while (masterLock.tryLock(1, TimeUnit.SECONDS)) {
-							if (count++ > 30)
-								break;
+				try {
+					doStart();
+					while (masterLock.tryLock(1, TimeUnit.SECONDS)) {
+						if (count++ > 30)
+							break;
 
-							TimeUnit.SECONDS.sleep(1);
-						}
-						doStop();
-					} finally {
-						masterLock.unlock();
+						TimeUnit.SECONDS.sleep(1);
 					}
-
-					if (count > 30)
-						return;
+					doStop();
+				} finally {
+					masterLock.unlock();
 				}
+
+				if (count > 30)
+					return;
 			}
 
 		} catch (InterruptedException e) {
