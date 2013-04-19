@@ -20,20 +20,21 @@ import com.gargoylesoftware.htmlunit.HttpWebConnection;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.ProxyConfig;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebConnection;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class TestCEIDGFetch {
-	// static String url =
-	// "https://prod.ceidg.gov.pl/CEIDG/ceidg.public.ui/SearchDetails.aspx?Id=8fe3574e-b03d-4f96-b6f9-14e2005291e5";
+	static String url = "https://prod.ceidg.gov.pl/CEIDG/ceidg.public.ui/SearchDetails.aspx?Id=8fe3574e-b03d-4f96-b6f9-14e2005291e5";
 	// static String url =
 	// "https://213.17.182.85/CEIDG/ceidg.public.ui/SearchDetails.aspx?Id=cb0e5201-01b6-4559-b7d8-d721f7b39a1b";
 	// static String url = "https://www.mbank.com.pl/";
-	static String url = "https://www.bph.pl/pi/do/Login";
+    	//static String url = "https://www.google.com/";
+	//static String url = "https://www.bph.pl/pi/do/Login";
 
 	// static String url = "http://www.onet.pl";
 
 	public static void main(String[] args) throws Exception {
-		jsEnabled();
+		jsEnabled1();
 		// jsDisabled();
 		//
 		// jsEnabled();
@@ -42,6 +43,7 @@ public class TestCEIDGFetch {
 	}
 
 	public static void jsEnabled() throws Exception {
+	    
 		for (int i = 0; i < 10; i++) {
 			long start = System.nanoTime();
 			final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_10);
@@ -53,16 +55,51 @@ public class TestCEIDGFetch {
 			webClient.setAjaxController(new NicelyResynchronizingAjaxController());
 
 			webClient.setWebConnection(new MyWebConnection(webClient));
+			//webClient.getWebConnection().
 
 			final HtmlPage page = webClient.getPage(url);
 
 			page.getBody();
 
+			webClient.getCookieManager().clearCookies();
 			webClient.closeAllWindows();
 
 			System.out.println("jsEnabled() (" + i + ") "
 					+ TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS) + "[ms]");
 		}
+	}
+	
+	public static void jsEnabled1() throws Exception {
+	    final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_10);
+
+		webClient.getOptions().setProxyConfig(new ProxyConfig("10.48.0.180", 3128));
+		webClient.getOptions().setCssEnabled(false);
+		webClient.getOptions().setThrowExceptionOnScriptError(false);
+		webClient.getOptions().setUseInsecureSSL(true);
+		webClient.setAjaxController(new NicelyResynchronizingAjaxController());
+
+		webClient.setWebConnection(new MyWebConnection(webClient));
+	    
+		for (int i = 0; i < 10; i++) {
+			long start = System.nanoTime();
+			
+
+			final HtmlPage page = webClient.getPage(url);
+
+			page.getBody();
+
+			webClient.getCookieManager().clearCookies();
+			
+			final WebConnection webConnection = webClient.getWebConnection();
+			if (webConnection instanceof HttpWebConnection) {
+		            ((HttpWebConnection) webConnection).shutdown();
+		        }
+			
+			System.out.println("jsEnabled() (" + i + ") "
+					+ TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS) + "[ms]");
+		}
+		
+		webClient.closeAllWindows();
 	}
 
 	public static void jsDisabled() throws Exception {
