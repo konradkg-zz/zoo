@@ -53,6 +53,9 @@ public class LockTest {
 				doStop();
 			} finally {
 				masterLock.unlock();
+				if(hz != null) {
+					hz.getLifecycleService().shutdown();
+				}
 			}
 
 		} catch (InterruptedException e) {
@@ -73,10 +76,6 @@ public class LockTest {
 				scheduledExecutorService.awaitTermination(10, TimeUnit.SECONDS);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
-			}
-			
-			if(hz != null) {
-				hz.getLifecycleService().shutdown();
 			}
 		}
 	}
