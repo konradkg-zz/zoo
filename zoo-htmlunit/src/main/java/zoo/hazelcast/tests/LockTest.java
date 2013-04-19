@@ -45,6 +45,8 @@ public class LockTest {
 		try {
 			while (masterLock.tryLock(1, TimeUnit.SECONDS) == false)
 				;
+			
+			masterLock.tryLock(1, TimeUnit.SECONDS); 
 			try {
 				doStart();
 
