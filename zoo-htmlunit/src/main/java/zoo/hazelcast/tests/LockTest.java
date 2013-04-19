@@ -19,8 +19,8 @@ public class LockTest {
 	private ScheduledExecutorService scheduledExecutorService;
 	private AtomicBoolean started = new AtomicBoolean(false);
 
-	// private Lock masterLock = createDistributedLock();
-	private Lock masterLock = createLocalLock();
+	private Lock masterLock = createDistributedLock();
+	// private Lock masterLock = createLocalLock();
 	private final static String MASTER_LOCK_KEY = "MASTER_LOCK";
 	private static HazelcastInstance hz;
 
@@ -47,23 +47,25 @@ public class LockTest {
 	public void startup() {
 		int count = 0;
 		try {
-			while (masterLock.tryLock(1, TimeUnit.SECONDS)) {
+			while (true) {
+				while (masterLock.tryLock(1, TimeUnit.SECONDS)) {
 
-				try {
-					doStart();
-					while (masterLock.tryLock(1, TimeUnit.SECONDS)) {
-						if (count++ > 30)
-							break;
+					try {
+						doStart();
+						while (masterLock.tryLock(1, TimeUnit.SECONDS)) {
+							if (count++ > 30)
+								break;
 
-						TimeUnit.SECONDS.sleep(1);
+							TimeUnit.SECONDS.sleep(1);
+						}
+						doStop();
+					} finally {
+						masterLock.unlock();
 					}
-					doStop();
-				} finally {
-					masterLock.unlock();
+
+					if (count > 30)
+						return;
 				}
-				
-				if(count > 30)
-					return;
 			}
 
 		} catch (InterruptedException e) {
@@ -83,8 +85,8 @@ public class LockTest {
 		if (started.compareAndSet(true, false)) {
 			System.out.println("Stopping... instanceId=" + instanceId);
 			final ScheduledExecutorService executorService = this.scheduledExecutorService;
-			
-			if(executorService == null)
+
+			if (executorService == null)
 				return;
 			scheduledExecutorService.shutdown();
 			try {
