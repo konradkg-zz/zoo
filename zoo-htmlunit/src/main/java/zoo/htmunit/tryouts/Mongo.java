@@ -27,7 +27,17 @@ public class Mongo {
 		
 		System.out.println(x/t);
 		
+		Query qDate = new Query();
+		Criteria cdate = new Criteria("timestamp");
+		cdate.lt(new Date());
+		qDate.addCriteria(cdate);
+		System.out.println(qDate);
 		
+		QueryBuilder bdate = QueryBuilder.start("timestamp_1");
+		bdate.lessThan(new Date());
+		System.out.println(bdate.get().toString());
+		
+		////
 		Query q = new Query();
 		//q.
 		Criteria is_blacklisted = new Criteria("is_blacklisted");
