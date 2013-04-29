@@ -48,7 +48,7 @@ public class TestREGONCaptcha {
     }
 
     public static void testAccuracy() throws Exception {
-	int loop = 15;
+	int loop = 100;
 	int found = 0;
 	int error = 0;
 	long start = System.nanoTime();
