@@ -24,17 +24,12 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.html.HtmlImage;
+import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlRadioButtonInput;
 import com.gargoylesoftware.htmlunit.html.HtmlSpan;
 
 public class TestREGONCaptcha {
-
-    // IM: convert captcha/captcha.jpg -threshold 15% captcha/captcha_dest.jpg
-    // TESS: d:\Temp\captcha\ImageMagick-6.8.3-9\captcha\captcha_dest.jpg
-    // d:\Temp\captcha\ImageMagick-6.8.3-9\captcha\captcha_dest -l reg -psm 7
-    // REGON
-
     private final static String REGON_URL = "http://www.stat.gov.pl/regon/";
 
     private final static String IM_EXEC = "d:/Temp/captcha/ImageMagick-6.8.3-9/convert.exe";
@@ -43,17 +38,21 @@ public class TestREGONCaptcha {
     private final static String TESS_EXEC = "d:/Temp/Tesseract-OCR/tesseract.exe";
     private final static String TESS_OPTS = "-l reg -psm 7 REGON";
 
+    private final static String TEST_NIP = "8131273211";
+    private final static String TEST_REGON = "140745674";
+
+    public final static String TEST_ASSERT_STR = "Numer identyfikacyjny REGON	" + TEST_REGON;
+
     public static void main(String[] args) throws Exception {
 	testAccuracy();
     }
 
     public static void testAccuracy() throws Exception {
-	int loop = 5;
+	int loop = 15;
 	int found = 0;
-	int replaced = 0;
-	int aaaaa = 0;
+	int error = 0;
 	long start = System.nanoTime();
-	final AtomicInteger loopFinal = new AtomicInteger(0);
+	// final AtomicInteger loopFinal = new AtomicInteger(0);
 
 	final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_10);
 	webClient.getOptions().setProxyConfig(new ProxyConfig("10.48.0.180", 3128));
@@ -62,38 +61,59 @@ public class TestREGONCaptcha {
 	webClient.setAjaxController(new NicelyResynchronizingAjaxController());
 
 	for (int i = 1; i <= loop; i++) {
-	    final AtomicInteger stepFinal = new AtomicInteger(1);
-	    loopFinal.incrementAndGet();
+	    // final AtomicInteger stepFinal = new AtomicInteger(1);
+	    // loopFinal.incrementAndGet();
 
-	    final HtmlPage page = webClient.getPage(REGON_URL);
+	    try {
+		final HtmlPage page = webClient.getPage(REGON_URL);
 
-	    // NIP
-	    HtmlRadioButtonInput nipRadio = page.getHtmlElementById("by_1nip_RB");
-	    nipRadio.click();
-	    // captchaImg
-	    HtmlSpan captchaSpan = page.getHtmlElementById("captchaImg");
-	    List<HtmlImage> spanDescendants = captchaSpan.getHtmlElementsByTagName("img");
-	    if (spanDescendants.isEmpty()) {
-		System.err.println("Captcha img not found");
-		continue;
-	    }
+		// NIP
+		HtmlRadioButtonInput nipRadio = page.getHtmlElementById("by_1nip_RB");
+		nipRadio.click();
+		// captchaImg
+		HtmlSpan captchaSpan = page.getHtmlElementById("captchaImg");
+		List<HtmlImage> spanDescendants = captchaSpan.getHtmlElementsByTagName("img");
+		if (spanDescendants.isEmpty()) {
+		    System.err.println("Captcha img not found");
+		    continue;
+		}
 
-	    HtmlImage image = spanDescendants.get(0);
+		HtmlImage image = spanDescendants.get(0);
 
-	    String sourceUrl = image.getSrcAttribute();
-	    URL sourceUrlFull = page.getFullyQualifiedUrl(sourceUrl);
+		String sourceUrl = image.getSrcAttribute();
+		URL sourceUrlFull = page.getFullyQualifiedUrl(sourceUrl);
 
-	    List<File> files = downoladFiles1(sourceUrlFull, sourceUrl, webClient);
-	    List<File> postFiles = doImageMagic(files);
-	    List<File> ocrResultFiles = doOCR(postFiles);
-	    List<Map<Character, AtomicInteger>> stats = getOcrResults(ocrResultFiles);
-	    String bestMatch = findBestMatch(stats);
+		List<File> files = downoladFiles1(sourceUrlFull, sourceUrl, webClient);
+		List<File> postFiles = doImageMagic(files);
+		List<File> ocrResultFiles = doOCR(postFiles);
+		List<Map<Character, AtomicInteger>> stats = getOcrResults(ocrResultFiles);
+		String bestMatch = findBestMatch(stats);
 
-	    System.out.println("BestMatch (" + i  +"): " + bestMatch + " for file: " + sourceUrl);
-	    
-	    if(bestMatch == null || "".equals(bestMatch)) {
-		System.err.println("Captcha not solved");
-		continue;
+		System.out.println("BestMatch (" + i + "): " + bestMatch + " for file: " + sourceUrl);
+
+		if (bestMatch == null || "".equals(bestMatch)) {
+		    System.err.println("Captcha not solved");
+		    continue;
+		}
+
+		HtmlInput nipInput = page.getHtmlElementById("criterion1TF");
+		nipInput.setValueAttribute(TEST_NIP);
+
+		HtmlInput captchaInput = page.getHtmlElementById("verifCodeTF");
+		captchaInput.setValueAttribute(bestMatch);
+
+		HtmlInput searchInput = page.getHtmlElementById("sendQueryB");
+		HtmlPage result = searchInput.click();
+
+		String resultText = result.asText();
+		// String xml = result.asXml();
+
+		if (resultText.contains(TEST_ASSERT_STR)) {
+		    found++;
+		}
+	    } catch (Exception e) {
+		System.err.println(e.getMessage());
+		error++;
 	    }
 	}
 
@@ -101,8 +121,7 @@ public class TestREGONCaptcha {
 
 	long stop = System.nanoTime();
 
-	System.out.println("found: " + found + " loop: " + loop + " replaced: " + replaced + " aaaaa:"
-	        + aaaaa);
+	System.out.println("found: " + found + " loop: " + loop + " error: " + error);
 	System.out.println("Done in: " + TimeUnit.MILLISECONDS.convert(stop - start, TimeUnit.NANOSECONDS)
 	        + "ms");
     }
