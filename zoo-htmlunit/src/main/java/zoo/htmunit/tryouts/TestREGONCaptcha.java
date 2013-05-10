@@ -3,6 +3,7 @@ package zoo.htmunit.tryouts;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,6 +19,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.ProxyConfig;
@@ -60,6 +63,7 @@ public class TestREGONCaptcha {
 	webClient.getOptions().setThrowExceptionOnScriptError(false);
 	webClient.setAjaxController(new NicelyResynchronizingAjaxController());
 
+	//webClient.getOptions().setTimeout(20000);
 	for (int i = 1; i <= loop; i++) {
 	    // final AtomicInteger stepFinal = new AtomicInteger(1);
 	    // loopFinal.incrementAndGet();
@@ -126,13 +130,22 @@ public class TestREGONCaptcha {
 	        + "ms");
     }
 
-    public static List<File> downoladFiles1(URL sourceUrlFull, String sourceUrl, WebClient webClientParent)
+    public static List<File> downoladFiles1(final URL sourceUrlFull, String sourceUrl, WebClient webClientParent)
 	    throws Exception {
 	List<File> result = new ArrayList<>();
 	final WebClient webClient = webClientParent;
-
-	WebResponse resp = webClient.getWebConnection().getResponse(
-	        new WebRequest(sourceUrlFull, HttpMethod.GET));
+	
+	WebActionRetry<WebResponse> actionRetry = new WebActionRetry<WebResponse>(webClient) {
+	    @Override
+            public WebResponse action(WebClient webClient) throws Exception {
+	        return webClient.getWebConnection().getResponse(
+		        new WebRequest(sourceUrlFull, HttpMethod.GET));
+            }	    	
+	};
+	WebResponse resp = actionRetry.call();
+	
+//	WebResponse resp = webClient.getWebConnection().getResponse(
+//	        new WebRequest(sourceUrlFull, HttpMethod.GET));
 	int qMark = sourceUrl.indexOf('?');
 	File f = new File("d:/Temp/captcha/REGON/Captcha-"
 	        + sourceUrl.substring(qMark + 1, sourceUrl.length()) + ".jpg");
@@ -143,6 +156,47 @@ public class TestREGONCaptcha {
 	    webClient.closeAllWindows();
 	}
 	return result;
+    }
+
+    private static abstract class WebActionRetry<T> implements Callable<T> {
+
+	private final AtomicInteger retryCount = new AtomicInteger(0);
+	private final WebClient webClient;
+
+	public WebActionRetry(WebClient webClient) {
+	    this.webClient = webClient;
+	}
+
+	protected abstract T action(WebClient webClient) throws Exception;
+
+	@Override
+	public T call() throws Exception {
+	    final int orgTimeout = webClient.getOptions().getTimeout();
+	    webClient.getOptions().setTimeout(5000);
+	    try {
+		while (retryCount.getAndIncrement() < 10) {
+		    
+		    try {
+			return action(webClient);
+		    } catch (SocketTimeoutException e) {
+			System.out.println("retry...");
+		    } catch (FailingHttpStatusCodeException e) {
+			int code = e.getStatusCode();
+			if(code == 502 || code == 504) {
+			    System.out.println("retry... code=" + code);
+			    continue;
+			}
+			
+			throw e;
+		    }
+		}
+	    } finally {
+		webClient.getOptions().setTimeout(orgTimeout);
+	    }
+
+	    return action(webClient);
+	}
+
     }
 
     private static List<File> doImageMagic(List<File> src) throws Exception {
