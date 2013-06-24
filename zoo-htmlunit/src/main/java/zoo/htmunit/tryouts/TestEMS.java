@@ -71,6 +71,7 @@ public class TestEMS {
 	//webClient.getOptions().setProxyConfig(new ProxyConfig("10.48.0.180", 5555, true));
 	webClient.getOptions().setCssEnabled(false);
 	webClient.getOptions().setThrowExceptionOnScriptError(false);
+	//webClient.getCookieManager().setCookiesEnabled(true);
 	webClient.setAjaxController(new NicelyResynchronizingAjaxController());
 
 	// webClient.getOptions().setTimeout(20000);
@@ -227,6 +228,12 @@ public class TestEMS {
 	    Process imProc = Runtime.getRuntime().exec(
 		    IM_EXEC + " " + src.get(0).getAbsolutePath() + " " + src.get(1).getAbsolutePath() 
 //		    + " " + src.get(2).getAbsolutePath() 
+		    
+//		    + " " + src.get(0).getAbsolutePath() 
+//		    + " " + src.get(2).getAbsolutePath() 
+//		    + " " + src.get(1).getAbsolutePath() 
+		    
+		    
 //		    + " " + src.get(3).getAbsolutePath() + " " + src.get(4).getAbsolutePath() 
 		    + " " + IM_OPTS + " " + out.getAbsolutePath());
 	    imProc.waitFor();
