@@ -44,15 +44,16 @@ public class TestEMS {
     private final static String EMS_URL = "https://ems.ms.gov.pl/krs/wyszukiwaniepodmiotu";
 
     private final static String IM_EXEC = "d:/Temp/captcha/ImageMagick-6.8.3-9/convert.exe";
-    private final static String IM_OPTS = "-compose Lighten -composite -threshold 15%%";
+    private final static String IM_OPTS = "-compose Lighten -composite -threshold 5%%";
 
     private final static String TESS_EXEC = "d:/Temp/Tesseract-OCR/tesseract.exe";
-    private final static String TESS_OPTS = "-psm 7 EMS";
+    //private final static String TESS_OPTS = "-psm 7 EMS";
+    private final static String TESS_OPTS = "EMS";
 
     // PZU
     private final static String TEST_KRS = "0000030211";
 
-    public final static String TEST_ASSERT_STR = "Numer identyfikacyjny REGON	";// +
+    public final static String TEST_ASSERT_STR = "POWSZECHNY ZAK£AD UBEZPIECZEÑ NA ¯YCIE SPÓ£KA AKCYJNA";// +
 										// TEST_REGON;
 
     public static void main(String[] args) throws Exception {
@@ -79,9 +80,12 @@ public class TestEMS {
 
 	    try {
 		final HtmlPage page = webClient.getPage(EMS_URL);
+		
+		final String pageText = page.asXml();
+		pageText.toString();
 
 		// captchaImg
-		HtmlDivision captchaDiv = page.getHtmlElementById("captcha_img");
+		HtmlDivision captchaDiv = page.getHtmlElementById("kaptchaZone");
 		List<HtmlImage> spanDescendants = captchaDiv.getHtmlElementsByTagName("img");
 		if (spanDescendants.isEmpty()) {
 		    System.err.println("Captcha img not found");
@@ -163,7 +167,7 @@ public class TestEMS {
 
 	    int qMark = sourceUrl.indexOf(":image/");
 	    File f = new File("d:/Temp/captcha/EMS/Captcha-"
-		    + sourceUrl.substring(qMark + 1, sourceUrl.length()) + "_" + i + ".jpg");
+		    + sourceUrl.substring(qMark + 7, sourceUrl.length()) + "_" + i + ".jpg");
 	    IOUtils.copy(resp.getContentAsStream(), new FileOutputStream(f));
 	    result.add(f);
 	}
@@ -221,7 +225,10 @@ public class TestEMS {
 	//for (File in : src) {
 	    File out = new File(src.get(0).getAbsolutePath().replace("_0.jpg", "") + "_dest.jpg");
 	    Process imProc = Runtime.getRuntime().exec(
-		    IM_EXEC + " " + src.get(0).getAbsolutePath() + " " + src.get(1).getAbsolutePath() + " " + IM_OPTS + " " + out.getAbsolutePath());
+		    IM_EXEC + " " + src.get(0).getAbsolutePath() + " " + src.get(1).getAbsolutePath() 
+//		    + " " + src.get(2).getAbsolutePath() 
+//		    + " " + src.get(3).getAbsolutePath() + " " + src.get(4).getAbsolutePath() 
+		    + " " + IM_OPTS + " " + out.getAbsolutePath());
 	    imProc.waitFor();
 	    result.add(out);
 	//}
