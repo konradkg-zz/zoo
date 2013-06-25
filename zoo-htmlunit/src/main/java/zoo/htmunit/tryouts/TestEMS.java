@@ -1,8 +1,11 @@
 package zoo.htmunit.tryouts;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -22,10 +25,11 @@ import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
-import com.gargoylesoftware.htmlunit.ProxyConfig;
+import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlDivision;
 import com.gargoylesoftware.htmlunit.html.HtmlImage;
@@ -57,6 +61,10 @@ public class TestEMS {
 
     public final static String TEST_ASSERT_STR = "POWSZECHNY ZAK£AD UBEZPIECZEÑ NA ¯YCIE SPÓ£KA AKCYJNA";// +
 										// TEST_REGON;
+    
+    //https://ems.ms.gov.pl/krs/wyszukiwaniepodmiotu.podmiotdaneszczegolowe/RP/0000030211
+    
+    
 
     public static void main(String[] args) throws Exception {
 	testAccuracy();
@@ -123,6 +131,13 @@ public class TestEMS {
 
 		HtmlCheckBoxInput stowarzyszeniaCheckbox = page.getHtmlElementById("rejestrStowarzyszenia");
 		stowarzyszeniaCheckbox.setChecked(true);
+		
+		HtmlCheckBoxInput wUpadlosciCheckbox = page.getHtmlElementById("wUpadlosci");
+		wUpadlosciCheckbox.setChecked(true);
+		
+		HtmlCheckBoxInput oppCheckbox = page.getHtmlElementById("opp");
+		oppCheckbox.setChecked(true);
+		
 
 		HtmlInput krsInput = page.getHtmlElementById("krs");
 		krsInput.setValueAttribute(TEST_KRS);
@@ -137,6 +152,38 @@ public class TestEMS {
 		if (resultText.contains(TEST_ASSERT_STR)) {
 		    found++;
 		}
+		
+		//details
+		
+		
+		List<HtmlAnchor> anchors = result.getAnchors();
+		HtmlAnchor detailsLink = null;
+		for(HtmlAnchor ha : anchors) {
+		    final String href = ha.getHrefAttribute();
+		    if(href.contains("wyszukiwaniepodmiotu.podmiotdaneszczegolowe")) {
+			detailsLink = ha;
+			break;
+		    }
+		}
+		
+		boolean fetchPdf = false;
+		
+		if(fetchPdf && detailsLink != null) {
+		    HtmlPage detailsPage = detailsLink.click();
+		    HtmlInput printInput = detailsPage.getHtmlElementById("pobierzWydruk");
+		    Page printPage = printInput.click();
+		    
+		    
+		    InputStream is = printPage.getWebResponse().getContentAsStream();
+		    OutputStream os = new BufferedOutputStream(new FileOutputStream(new File("d:/Temp/captcha/EMS/pdf/" + System.currentTimeMillis() + ".pdf"), false));
+		    IOUtils.copy(is, os);
+		    
+		    is.close();
+		    os.flush();
+		    os.close();
+		    
+		}
+		
 		
 	    } catch (Exception e) {
 		System.err.println(e.getMessage());
