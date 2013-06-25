@@ -44,7 +44,9 @@ public class TestEMS {
     private final static String EMS_URL = "https://ems.ms.gov.pl/krs/wyszukiwaniepodmiotu";
 
     private final static String IM_EXEC = "d:/Temp/captcha/ImageMagick-6.8.3-9/convert.exe";
-    private final static String IM_OPTS = "-compose Lighten -composite -threshold 5%%";
+    //-crop 149x47+34+3
+    //-crop 138x41+37+9 (bad)
+    private final static String IM_OPTS = "-compose Lighten -composite -crop 149x46+34+3 -threshold 5%%";
 
     private final static String TESS_EXEC = "d:/Temp/Tesseract-OCR/tesseract.exe";
     //private final static String TESS_OPTS = "-psm 7 EMS";
